@@ -1,11 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import {
   Pressable,
+  type StyleProp,
   StyleSheet,
   Text,
   TextInput,
   type TextInputProps,
   View,
+  type ViewStyle,
 } from 'react-native';
 
 import { colors, offset as offsets, onSubject, pale, radius, spacing } from '@/theme';
@@ -66,13 +68,21 @@ export function Button({
   );
 }
 
-export function Field(props: TextInputProps) {
+export function Field({
+  containerStyle,
+  style,
+  ...props
+}: TextInputProps & { containerStyle?: StyleProp<ViewStyle> }) {
+  // Layout belongs on the surface, not the input inside it. A `flex: 1` sent
+  // to the TextInput leaves the wrapper sized to its content, so fields in a
+  // row do not share it and the last one overflows — which only showed up at
+  // wider handset widths.
   return (
-    <Surface r={radius.md} depth={offsets.sm}>
+    <Surface r={radius.md} depth={offsets.sm} style={containerStyle}>
       <TextInput
         placeholderTextColor={colors.faint}
         {...props}
-        style={[styles.field, props.style]}
+        style={[styles.field, style]}
       />
     </Surface>
   );

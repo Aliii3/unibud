@@ -106,14 +106,14 @@ export default function ScheduleScreen() {
 
         <View style={styles.times}>
           <Field
-            style={styles.time}
+            containerStyle={styles.time}
             value={start}
             onChangeText={setStart}
             placeholder="09:00"
             keyboardType="numbers-and-punctuation"
           />
           <Field
-            style={styles.time}
+            containerStyle={styles.time}
             value={end}
             onChangeText={setEnd}
             placeholder="10:30"

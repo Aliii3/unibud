@@ -17,7 +17,8 @@
     "build:preview": "npx eas-cli build --platform all --profile preview",
     "submit:ios": "npx eas-cli submit --platform ios --profile production",
     "submit:android": "npx eas-cli submit --platform android --profile production",
-    "icons": "python3 scripts/build_icons.py"
+    "icons": "python3 scripts/build_icons.py",
+    "screenshots": "node scripts/capture_screens.mjs && python3 scripts/build_screenshots.py"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
