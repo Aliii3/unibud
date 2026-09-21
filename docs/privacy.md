@@ -78,4 +78,4 @@ the date at the top will change.
 
 ## Contact
 
-Questions about this policy: **[CONTACT EMAIL]**
+Questions about this policy: CONTACT_EMAIL
