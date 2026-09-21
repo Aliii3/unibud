@@ -11,7 +11,13 @@
     "typecheck": "tsc --noEmit",
     "spec": "python3 docs/build_spec.py",
     "test:schema": "node tests/schema.test.mjs",
-    "test:smoke": "node tests/smoke.mjs"
+    "test:smoke": "node tests/smoke.mjs",
+    "build:ios": "npx eas-cli build --platform ios --profile production",
+    "build:android": "npx eas-cli build --platform android --profile production",
+    "build:preview": "npx eas-cli build --platform all --profile preview",
+    "submit:ios": "npx eas-cli submit --platform ios --profile production",
+    "submit:android": "npx eas-cli submit --platform android --profile production",
+    "icons": "python3 scripts/build_icons.py"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",

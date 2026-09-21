@@ -90,6 +90,46 @@ npm run test:smoke   # drives every screen against a running dev server
 npm run spec         # regenerate docs/unibud-concept-spec.pdf
 ```
 
+## Shipping
+
+`eas.json` is set up and validated. Three build profiles:
+
+| Profile | What it makes |
+| --- | --- |
+| `development` | a dev client — iOS simulator build, Android APK |
+| `preview` | an installable internal build (`npm run build:preview`) |
+| `production` | a store build (`npm run build:ios` / `build:android`) |
+
+Versioning uses `appVersionSource: "remote"`, so **EAS owns the build number
+and version code** — that is why neither is set in `app.json`. Bump
+`expo.version` there for a marketing version (currently `1.0.0`); the build
+number increments by itself.
+
+First time, on a machine logged into your Apple account:
+
+```bash
+npx eas login
+npx eas init            # creates the EAS project and writes extra.eas.projectId
+npm run build:ios       # EAS generates the signing credentials for you
+npm run submit:ios      # prompts for Apple ID, team and the App Store Connect app
+```
+
+`eas submit` asks for the Apple ID, team ID and App Store Connect app ID
+interactively. Only for a non-interactive CI submit do they need to go into
+`eas.json` under `submit.production.ios` as `appleId`, `appleTeamId` and
+`ascAppId` — placeholders are deliberately absent because the file is
+validated on their format and would not parse.
+
+Android submission expects a Play service account key at
+`./play-service-account.json`. That path and the usual signing material are
+gitignored; do not commit them.
+
+Still needed on the App Store Connect side, none of which lives in this
+repo: screenshots at the required device sizes, a privacy policy URL, and
+the privacy questionnaire — which for Unibud is "no data collected", since
+everything is stored on the device and nothing is sent anywhere. A build
+must have run through `eas build` before `eas submit` has anything to send.
+
 ## Tests
 
 `npm run test:schema` runs the real migrations from `src/db/schema.ts`
