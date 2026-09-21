@@ -2,7 +2,7 @@ import { Stack, type ErrorBoundaryProps } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
 import { StatusBar } from 'expo-status-bar';
 import { Suspense } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -23,10 +23,23 @@ function Booting() {
  * rejects `onError` when `useSuspense` is set, so recovery belongs here.
  */
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  // On web, SQLite needs OPFS, which browsers only expose on a secure
+  // origin. Opening the dev server over http:// at a LAN address fails this
+  // way, and the raw message does not say what to do about it.
+  const insecureWebOrigin =
+    Platform.OS === 'web' && /navigator\.storage|not secure/i.test(error.message);
+
   return (
     <View style={styles.center}>
       <Text style={styles.errorTitle}>Unibud could not start</Text>
-      <Text style={styles.errorBody}>{error.message}</Text>
+      <Text style={styles.errorBody}>
+        {insecureWebOrigin
+          ? 'The web preview stores data in the browser, which only works on a secure address. Open it on localhost on this machine, or use the app on a phone instead.'
+          : error.message}
+      </Text>
+      {insecureWebOrigin ? (
+        <Text style={styles.errorDetail}>{error.message}</Text>
+      ) : null}
       <View style={styles.retry}>
         <Button label="Try again" onPress={() => void retry()} />
       </View>
@@ -90,6 +103,17 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   errorTitle: { fontSize: 16, fontWeight: '600', color: colors.ink },
-  errorBody: { fontSize: 14, color: colors.muted, textAlign: 'center' },
+  errorBody: {
+    fontSize: 14,
+    color: colors.muted,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  errorDetail: {
+    fontSize: 12,
+    color: colors.faint,
+    textAlign: 'center',
+    marginTop: spacing.sm,
+  },
   retry: { marginTop: spacing.lg },
 });

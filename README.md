@@ -183,6 +183,13 @@ Android are the real targets. Notifications do not fire on web, and
 `metro.config.js` exists only to make expo-sqlite's WebAssembly build work
 there.
 
+**The web preview only runs on `localhost`.** SQLite on web stores data in
+OPFS, which browsers expose only on a secure origin. Opening the dev server
+from another device over `http://<lan-ip>:8081` fails with
+`navigator.storage not available`, because plain HTTP to an IP address is
+not a secure context. To try it on a phone, use Expo Go or a development
+build rather than the browser.
+
 ## Layout
 
 ```
