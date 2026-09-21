@@ -60,8 +60,35 @@ build to test the daily check-in there.
 npm run typecheck    # tsc --noEmit
 npx expo-doctor      # project health
 npm run web          # open it in a browser, no simulator needed
+npm run test:schema  # migrations, cascades and CHECK constraints
+npm run test:smoke   # drives every screen against a running dev server
 npm run spec         # regenerate docs/unibud-concept-spec.pdf
 ```
+
+## Tests
+
+`npm run test:schema` runs the real migrations from `src/db/schema.ts`
+against an in-memory SQLite and asserts the cascades, the CHECK constraints
+and the `ON DELETE SET NULL` on a todo's deadline link. It needs nothing
+running.
+
+`npm run test:smoke` drives the app end to end in a headless browser, so
+start `npm run web` first. Three things it cannot cover there, all because
+of the web target rather than the app:
+
+- **Document upload and chapters** — `expo-document-picker` does not
+  complete its round trip headlessly.
+- **Notifications** — `expo-notifications` does not schedule on web.
+- **Deleting a subject** — `Alert.alert` is a no-op on react-native-web, so
+  the confirmation never appears and nothing is deleted. The cascade behind
+  it is covered by the schema test instead.
+
+Two things the smoke test has to work around, worth knowing before editing
+it: the bottom tabs are anchors whose accessible name does not match their
+label and which Playwright's actionability check never settles on, so
+`tapTab` finds them positionally inside `role="tablist"` and clicks their
+centre; and the subject screen's segmented control is also `role="tab"`,
+so anything looking for a bottom tab has to be on a tab screen first.
 
 `npm run web` is a convenience for eyeballing a layout quickly; iOS and
 Android are the real targets. Notifications do not fire on web, and

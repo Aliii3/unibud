@@ -9,7 +9,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "spec": "python3 docs/build_spec.py"
+    "spec": "python3 docs/build_spec.py",
+    "test:schema": "node tests/schema.test.mjs",
+    "test:smoke": "node tests/smoke.mjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
@@ -39,6 +41,7 @@
   "devDependencies": {
     "@types/react": "~19.2.2",
     "babel-preset-expo": "^57.0.12",
+    "playwright-core": "^1.63.0",
     "typescript": "~6.0.3"
   }
 }
