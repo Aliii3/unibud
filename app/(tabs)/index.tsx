@@ -12,13 +12,15 @@ import {
   IconButton,
   IconTile,
   Loading,
+  Pill,
   ScreenHeader,
   ScreenTitle,
   SectionHeader,
+  Surface,
 } from '@/components/ui';
 import { createSubject, listSubjects, type SubjectSummary } from '@/db/subjects';
 import { useQuery } from '@/lib/useQuery';
-import { colors, radius, shadow, spacing, type } from '@/theme';
+import { border, colors, offset as offsets, radius, spacing, type } from '@/theme';
 
 /**
  * Home — the "subjects page" from the notes, drawn as a grid of folders.
@@ -33,6 +35,16 @@ export default function HomeScreen() {
   const subjects = data ?? [];
   const openDeadlines = subjects.reduce((n, s) => n + s.open_deadlines, 0);
   const openTodos = subjects.reduce((n, s) => n + s.open_todos, 0);
+
+  // Only the single most recent subject wears the badge — marking every
+  // subject added today turns it into wallpaper rather than a signal.
+  const newestId = subjects.reduce<number | null>(
+    (best, s) =>
+      best == null || s.created_at > (subjects.find((x) => x.id === best)?.created_at ?? 0)
+        ? s.id
+        : best,
+    null
+  );
 
   // A lone item on the final row would stretch to full width, so pad to even.
   const grid: (SubjectSummary | null)[] =
@@ -75,7 +87,7 @@ export default function HomeScreen() {
               }
             />
 
-            <ScreenTitle title={'Save it once.\nFind it anytime.'} />
+            <ScreenTitle title={'Save now.\nFind anytime.'} />
 
             <AddRow
               value={name}
@@ -115,6 +127,7 @@ export default function HomeScreen() {
           item ? (
             <FolderCard
               subject={item}
+              isNewest={item.id === newestId}
               onPress={() => router.push(`/subject/${item.id}`)}
             />
           ) : (
@@ -137,15 +150,20 @@ export default function HomeScreen() {
   );
 }
 
+/** How long the newest subject keeps its NEW badge. */
+const NEW_FOR_MS = 24 * 60 * 60 * 1000;
+
 /**
- * A folder: a coloured tab behind a white body, with the subject's icon tile
- * and counts up top and its name along the bottom.
+ * A folder: a coloured tab tucked behind an outlined body, with the icon
+ * tile and counts up top and the subject name along the bottom.
  */
 function FolderCard({
   subject,
+  isNewest,
   onPress,
 }: {
   subject: SubjectSummary;
+  isNewest: boolean;
   onPress: () => void;
 }) {
   const counts: string[] = [];
@@ -154,6 +172,7 @@ function FolderCard({
   if (subject.documents > 0) {
     counts.push(`${subject.documents} doc${subject.documents === 1 ? '' : 's'}`);
   }
+  const isNew = isNewest && Date.now() - subject.created_at < NEW_FOR_MS;
 
   return (
     <Pressable
@@ -162,29 +181,36 @@ function FolderCard({
       style={({ pressed }) => [styles.folder, pressed ? styles.pressed : null]}
     >
       <View style={[styles.folderTab, { backgroundColor: subject.color }]} />
-      <View style={styles.folderBody}>
-        <View style={styles.folderTop}>
-          <IconTile
-            icon={subject.icon as keyof typeof Ionicons.glyphMap}
-            color={subject.color}
-            size={44}
-          />
-          <View style={styles.folderCounts}>
-            {counts.length > 0 ? (
-              counts.slice(0, 2).map((c) => (
-                <Text key={c} style={styles.folderCount} numberOfLines={1}>
-                  {c}
-                </Text>
-              ))
-            ) : (
-              <Text style={styles.folderCount}>Empty</Text>
-            )}
+      <Surface r={radius.md} depth={offsets.md} style={styles.folderFace}>
+        <View style={styles.folderBody}>
+          <View style={styles.folderTop}>
+            <IconTile
+              icon={subject.icon as keyof typeof Ionicons.glyphMap}
+              color={subject.color}
+              size={46}
+            />
+            <View style={styles.folderCounts}>
+              {counts.length > 0 ? (
+                counts.slice(0, 2).map((c) => (
+                  <Text key={c} style={styles.folderCount} numberOfLines={1}>
+                    {c}
+                  </Text>
+                ))
+              ) : (
+                <Text style={styles.folderCount}>Empty</Text>
+              )}
+              {isNew ? (
+                <View style={styles.folderBadge}>
+                  <Pill label="New" color={colors.pink} />
+                </View>
+              ) : null}
+            </View>
           </View>
+          <Text style={styles.folderName} numberOfLines={2}>
+            {subject.name}
+          </Text>
         </View>
-        <Text style={styles.folderName} numberOfLines={2}>
-          {subject.name}
-        </Text>
-      </View>
+      </Surface>
     </Pressable>
   );
 }
@@ -192,29 +218,27 @@ function FolderCard({
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.canvas },
   content: { padding: spacing.lg, paddingBottom: spacing.xxl },
-  column: { gap: spacing.md },
-  count: { ...type.h2, color: colors.faint },
+  column: { gap: spacing.lg },
+  count: { ...type.h2, color: colors.muted },
 
-  folder: { flex: 1, minWidth: 0, marginBottom: spacing.md },
+  folder: { flex: 1, minWidth: 0, marginBottom: spacing.lg },
+  // The tab sits behind the card body, so only its top edge shows.
   folderTab: {
-    width: '48%',
-    height: 16,
+    width: '52%',
+    height: 20,
+    marginLeft: spacing.md,
     borderTopLeftRadius: radius.sm,
     borderTopRightRadius: radius.sm,
-    opacity: 0.85,
+    borderWidth: border.width,
+    borderBottomWidth: 0,
+    borderColor: border.color,
   },
-  folderBody: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    borderTopLeftRadius: 0,
-    padding: spacing.lg,
-    minHeight: 148,
-    justifyContent: 'space-between',
-    ...shadow,
-  },
+  folderFace: { marginTop: -2 },
+  folderBody: { padding: spacing.lg, minHeight: 150, justifyContent: 'space-between' },
   folderTop: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
   folderCounts: { flex: 1, minWidth: 0, paddingTop: 2 },
   folderCount: { fontSize: 12, color: colors.muted, fontWeight: '600' },
+  folderBadge: { marginTop: spacing.xs },
   folderName: {
     fontSize: 16,
     fontWeight: '800',

@@ -2,8 +2,8 @@
  * Unibud design tokens.
  *
  * Palette is the one supplied with the references. The surface language is
- * deliberately soft: generous radii, layered shadows and coloured glows in
- * place of outlines, so depth comes from light rather than borders.
+ * the second reference's: every raised thing is an outlined face sitting on
+ * a solid offset rectangle, so depth is drawn rather than blurred.
  */
 export const colors = {
   blue: '#3760F9',
@@ -15,15 +15,17 @@ export const colors = {
   limeDeep: '#B4E82F',
   lavender: '#DAD9FB',
 
-  canvas: '#F4F5FA',
-  canvasTint: '#EDEEF7',
-  surface: '#FFFFFF',
+  canvas: '#F7F3EA',
+  canvasTint: '#EFE9DC',
+  surface: '#FFFDF8',
   onInk: '#FFFFFF',
 
-  muted: '#6E6D7E',
-  faint: '#A6A5B5',
-  line: '#EBEBF3',
-  inset: '#F2F2F8',
+  muted: '#6B6862',
+  faint: '#9C978D',
+  line: '#17161B',
+  inset: '#F2EEE4',
+
+  pink: '#FF4D86',
 
   danger: '#E5484D',
   warning: '#B87503',
@@ -71,40 +73,30 @@ export function lighten(color: string): string {
 
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 36 } as const;
 
-/** Rounder than the last pass — the main lever for "smoother". */
-export const radius = { sm: 14, md: 20, lg: 28, xl: 34, pill: 999 } as const;
+/** Squarer than the last pass: the reference's corners are crisp, not pill. */
+export const radius = { sm: 10, md: 14, lg: 18, xl: 22, pill: 999 } as const;
 
-/** Resting elevation for any raised surface. Wide, faint, low contrast. */
+/** Every outlined surface uses the same weight, so nothing reads as heavier. */
+export const border = { width: 2, color: '#17161B' } as const;
+
+/** How far the solid shadow sits below and right of its surface. */
+export const offset = { sm: 3, md: 5 } as const;
+
+/**
+ * Depth is drawn, not blurred: see the Surface component, which paints a
+ * solid offset rectangle behind an outlined face. React Native's own shadow
+ * props cannot do this portably — Android's elevation always blurs — so
+ * these remain only for the few places that want a faint lift.
+ */
 export const shadow = {
-  shadowColor: '#2A2545',
-  shadowOpacity: 0.08,
-  shadowRadius: 24,
-  shadowOffset: { width: 0, height: 10 },
-  elevation: 4,
-} as const;
-
-/** Tighter shadow for small controls that should not float. */
-export const shadowSoft = {
-  shadowColor: '#2A2545',
+  shadowColor: '#17161B',
   shadowOpacity: 0.06,
-  shadowRadius: 12,
+  shadowRadius: 10,
   shadowOffset: { width: 0, height: 4 },
   elevation: 2,
 } as const;
 
-/**
- * A coloured halo. `strength` scales it: 1 for the hero panel, lower for the
- * small icon tiles, where a full halo reads as a blur rather than a glow.
- */
-export function glow(color: string, strength = 1) {
-  return {
-    shadowColor: color,
-    shadowOpacity: 0.42 * strength,
-    shadowRadius: 22 * strength,
-    shadowOffset: { width: 0, height: 10 * strength },
-    elevation: Math.round(8 * strength),
-  } as const;
-}
+export const shadowSoft = shadow;
 
 /** Pale partner of a colour, for a resting accent surface. */
 export function pale(color: string): string {

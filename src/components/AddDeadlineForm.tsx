@@ -8,7 +8,7 @@ import { listSubjects, type SubjectSummary } from '@/db/subjects';
 import type { DeadlineKind } from '@/db/types';
 import { parseDueDate } from '@/lib/format';
 import { scheduleDeadlineReminder } from '@/lib/notifications';
-import { colors, radius, shadow, spacing } from '@/theme';
+import { border, colors, radius, spacing } from '@/theme';
 
 import { Button, Chip, Field } from './ui';
 
@@ -146,7 +146,8 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     gap: spacing.md,
     marginBottom: spacing.md,
-    ...shadow,
+    borderWidth: border.width,
+    borderColor: border.color,
   },
   heading: { fontSize: 17, fontWeight: '800', color: colors.ink, letterSpacing: -0.3 },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },

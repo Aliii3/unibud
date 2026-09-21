@@ -7,22 +7,75 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  type StyleProp,
   type TextInputProps,
   View,
+  type ViewStyle,
 } from 'react-native';
 
 import {
+  border,
   colors,
-  glow,
   lighten,
-  pale,
+  offset as offsets,
   onSubject,
+  pale,
   radius,
-  shadow,
-  shadowSoft,
   spacing,
   type,
 } from '../theme';
+
+/**
+ * The one raised surface in the app: an outlined face sitting on a solid
+ * rectangle offset down and right.
+ *
+ * React Native cannot draw a hard shadow portably — iOS could with
+ * shadowRadius 0, but Android's elevation always blurs — so the shadow is a
+ * real View behind the face. The face stays in normal flow, so layout is
+ * unaffected and only the drawn depth extends past the box.
+ */
+export function Surface({
+  children,
+  style,
+  faceStyle,
+  fill = colors.surface,
+  r = radius.md,
+  depth = offsets.md,
+  shadowColor = colors.ink,
+}: {
+  children?: ReactNode;
+  /** Layout for the whole surface. Margins belong here, not on the face:
+   *  the shadow is measured against the wrapper, so a margin on the face
+   *  would pad the wrapper and thicken the drawn shadow by that much. */
+  style?: StyleProp<ViewStyle>;
+  faceStyle?: StyleProp<ViewStyle>;
+  fill?: string;
+  r?: number;
+  depth?: number;
+  shadowColor?: string;
+}) {
+  return (
+    <View style={[styles.surfaceWrap, style]}>
+      <View
+        pointerEvents="none"
+        style={[
+          styles.surfaceShadow,
+          { left: depth, top: depth, right: -depth, bottom: -depth },
+          { backgroundColor: shadowColor, borderRadius: r },
+        ]}
+      />
+      <View
+        style={[
+          styles.surfaceFace,
+          { backgroundColor: fill, borderRadius: r },
+          faceStyle,
+        ]}
+      >
+        {children}
+      </View>
+    </View>
+  );
+}
 
 /** Big, tight headline. The subtitle sits under it in muted grey. */
 export function ScreenTitle({
@@ -65,17 +118,23 @@ export function Card({
   onPress,
   accent,
   padded = true,
+  fill,
 }: {
   children: ReactNode;
   onPress?: () => void;
   accent?: string;
   padded?: boolean;
+  fill?: string;
 }) {
   const content = (
-    <View style={[styles.card, padded ? styles.cardPadded : null]}>
-      {accent ? <View style={[styles.cardAccent, { backgroundColor: accent }]} /> : null}
-      {children}
-    </View>
+    <Surface fill={fill} r={radius.md} style={styles.cardSpacing}>
+      <View style={padded ? styles.cardPadded : null}>
+        {accent ? (
+          <View style={[styles.cardAccent, { backgroundColor: accent }]} />
+        ) : null}
+        {children}
+      </View>
+    </Surface>
   );
   if (!onPress) return content;
   return (
@@ -86,8 +145,8 @@ export function Card({
 }
 
 /**
- * The blue hero panel: one headline number with a lime action circle, as in
- * the reference's "number of tasks performed" card.
+ * The hero panel: one headline number on a saturated block, with a lime
+ * action square, as in the reference's collection header.
  */
 export function HeroStat({
   value,
@@ -101,23 +160,20 @@ export function HeroStat({
   onPress?: () => void;
 }) {
   const body = (
-    <LinearGradient
-      colors={[colors.blue, colors.blueDeep]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.hero}
-    >
-      <View style={styles.heroTop}>
-        <Text style={styles.heroLabel}>{label}</Text>
-        {onPress ? (
-          <View style={styles.heroCircle}>
-            <Ionicons name="arrow-forward" size={16} color={colors.ink} />
-          </View>
-        ) : null}
+    <Surface fill={colors.blue} r={radius.lg} style={styles.heroSpacing}>
+      <View style={styles.hero}>
+        <View style={styles.heroTop}>
+          <Text style={styles.heroLabel}>{label}</Text>
+          {onPress ? (
+            <View style={styles.heroSquare}>
+              <Ionicons name="arrow-forward" size={18} color={colors.ink} />
+            </View>
+          ) : null}
+        </View>
+        <Text style={styles.heroValue}>{value}</Text>
+        {caption ? <Text style={styles.heroCaption}>{caption}</Text> : null}
       </View>
-      <Text style={styles.heroValue}>{value}</Text>
-      {caption ? <Text style={styles.heroCaption}>{caption}</Text> : null}
-    </LinearGradient>
+    </Surface>
   );
   if (!onPress) return body;
   return (
@@ -127,7 +183,7 @@ export function HeroStat({
   );
 }
 
-/** Small stat tile. `tone` picks the surface: lavender, lime or plain. */
+/** Small stat tile. `tone` picks the fill. */
 export function StatTile({
   value,
   label,
@@ -137,21 +193,25 @@ export function StatTile({
   label: string;
   tone?: 'plain' | 'lavender' | 'lime';
 }) {
-  const bg =
+  const fill =
     tone === 'lavender' ? colors.lavender : tone === 'lime' ? colors.lime : colors.surface;
   return (
-    <View style={[styles.tile, { backgroundColor: bg }]}>
-      <Text style={styles.tileValue}>{value}</Text>
-      <Text style={styles.tileLabel} numberOfLines={2}>
-        {label}
-      </Text>
+    <View style={styles.tileWrap}>
+      <Surface fill={fill} r={radius.md} depth={offsets.sm}>
+        <View style={styles.tile}>
+          <Text style={styles.tileValue}>{value}</Text>
+          <Text style={styles.tileLabel} numberOfLines={2}>
+            {label}
+          </Text>
+        </View>
+      </Surface>
     </View>
   );
 }
 
 /**
- * Black pill button. The primary variant carries a lime circle on the right,
- * which is the reference's main call to action.
+ * A squared, outlined button on a solid offset shadow. The primary variant
+ * is black with a lime action square, the reference's main call to action.
  */
 export function Button({
   label,
@@ -166,8 +226,13 @@ export function Button({
   variant?: 'primary' | 'quiet' | 'lime' | 'danger';
   disabled?: boolean;
 }) {
-  // A disabled button gets its own flat surface rather than a dimmed fill,
-  // which on the black pill read as an active grey button.
+  const fill = disabled
+    ? colors.inset
+    : variant === 'primary'
+      ? colors.ink
+      : variant === 'lime'
+        ? colors.lime
+        : colors.surface;
   const tint = disabled
     ? colors.faint
     : variant === 'primary'
@@ -181,36 +246,37 @@ export function Button({
       accessibilityState={{ disabled: !!disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.button,
-        disabled
-          ? styles.buttonDisabled
-          : variant === 'primary'
-            ? styles.buttonPrimary
-            : variant === 'lime'
-              ? styles.buttonLime
-              : styles.buttonQuiet,
-        pressed ? styles.pressed : null,
-      ]}
+      style={({ pressed }) => (pressed ? styles.pressed : null)}
     >
-      {icon ? <Ionicons name={icon} size={17} color={tint} /> : null}
-      <Text style={[styles.buttonLabel, { color: tint }]}>{label}</Text>
-      {variant === 'primary' && !disabled ? (
-        <View style={styles.buttonCircle}>
-          <Ionicons name="arrow-forward" size={14} color={colors.ink} />
+      <Surface
+        fill={fill}
+        r={radius.md}
+        depth={disabled ? 0 : offsets.sm}
+        style={styles.buttonSpacing}
+      >
+        <View style={styles.button}>
+          {icon ? <Ionicons name={icon} size={18} color={tint} /> : null}
+          <Text style={[styles.buttonLabel, { color: tint }]}>{label}</Text>
+          {variant === 'primary' && !disabled ? (
+            <View style={styles.buttonSquare}>
+              <Ionicons name="arrow-forward" size={14} color={colors.ink} />
+            </View>
+          ) : null}
         </View>
-      ) : null}
+      </Surface>
     </Pressable>
   );
 }
 
 export function Field(props: TextInputProps) {
   return (
-    <TextInput
-      placeholderTextColor={colors.faint}
-      {...props}
-      style={[styles.field, props.style]}
-    />
+    <Surface r={radius.md} depth={offsets.sm} style={styles.fieldSpacing}>
+      <TextInput
+        placeholderTextColor={colors.faint}
+        {...props}
+        style={[styles.field, props.style]}
+      />
+    </Surface>
   );
 }
 
@@ -233,25 +299,30 @@ export function Chip({
       accessibilityRole={role}
       accessibilityState={{ selected }}
       onPress={onPress}
-      style={[
-        styles.chip,
-        selected ? { backgroundColor: color, borderColor: color } : null,
-      ]}
+      style={({ pressed }) => (pressed ? styles.pressed : null)}
     >
-      <Text
-        style={[
-          styles.chipLabel,
-          selected ? { color: onSubject(color), fontWeight: '700' } : null,
-        ]}
-        numberOfLines={1}
+      <Surface
+        fill={selected ? color : colors.surface}
+        r={radius.sm}
+        depth={selected ? offsets.sm : 0}
       >
-        {label}
-      </Text>
+        <View style={styles.chip}>
+          <Text
+            style={[
+              styles.chipLabel,
+              selected ? { color: onSubject(color), fontWeight: '800' } : null,
+            ]}
+            numberOfLines={1}
+          >
+            {label}
+          </Text>
+        </View>
+      </Surface>
     </Pressable>
   );
 }
 
-/** Static badge, e.g. a deadline's kind. */
+/** Static badge, e.g. a deadline's kind or a NEW marker. */
 export function Pill({
   label,
   color = colors.lime,
@@ -291,9 +362,11 @@ export function EmptyState({
 }) {
   return (
     <View style={styles.empty}>
-      <View style={styles.emptyIcon}>
-        <Ionicons name={icon} size={24} color={colors.ink} />
-      </View>
+      <Surface fill={colors.lavender} r={radius.md} depth={offsets.sm}>
+        <View style={styles.emptyIcon}>
+          <Ionicons name={icon} size={26} color={colors.ink} />
+        </View>
+      </Surface>
       <Text style={styles.emptyTitle}>{title}</Text>
       <Text style={styles.emptyBody}>{body}</Text>
     </View>
@@ -319,28 +392,40 @@ export function IconButton({
   onPress: () => void;
   color?: string;
   label: string;
-  /** Draws the icon on a round surface, as in the reference's header controls. */
+  /** Draws the icon as an outlined square, as in the reference's header. */
   surface?: boolean;
 }) {
+  const glyph = <Ionicons name={icon} size={surface ? 20 : 20} color={color} />;
+  if (!surface) {
+    return (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        hitSlop={10}
+        onPress={onPress}
+        style={({ pressed }) => (pressed ? styles.pressed : null)}
+      >
+        {glyph}
+      </Pressable>
+    );
+  }
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
-      hitSlop={10}
       onPress={onPress}
-      style={({ pressed }) => [
-        surface ? styles.iconSurface : null,
-        pressed ? styles.pressed : null,
-      ]}
+      style={({ pressed }) => (pressed ? styles.pressed : null)}
     >
-      <Ionicons name={icon} size={surface ? 18 : 20} color={color} />
+      <Surface r={radius.sm} depth={offsets.sm}>
+        <View style={styles.iconSurface}>{glyph}</View>
+      </Surface>
     </Pressable>
   );
 }
 
 /**
- * A rounded square carrying an icon, filled with a soft gradient of the
- * subject's colour. This is the mark used on folder cards and doc rows.
+ * A squared, outlined tile carrying an icon on a flat colour — the mark used
+ * on folder cards and document rows.
  */
 export function IconTile({
   icon,
@@ -352,22 +437,15 @@ export function IconTile({
   size?: number;
 }) {
   return (
-    <LinearGradient
-      colors={[lighten(color), color]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={[
-        styles.iconTile,
-        { width: size, height: size, borderRadius: size * 0.34 },
-        glow(color, 0.55),
-      ]}
-    >
-      <Ionicons name={icon} size={size * 0.46} color={onSubject(color)} />
-    </LinearGradient>
+    <Surface fill={color} r={radius.sm} depth={0}>
+      <View style={[styles.iconTile, { width: size, height: size }]}>
+        <Ionicons name={icon} size={size * 0.5} color={onSubject(color)} />
+      </View>
+    </Surface>
   );
 }
 
-/** Top bar of round controls, as in the reference's header. */
+/** Top bar of outlined square controls, as in the reference's header. */
 export function ScreenHeader({
   left,
   right,
@@ -404,34 +482,38 @@ export function AddRow({
 }) {
   return (
     <View style={styles.addRow}>
-      <View style={styles.addField}>
-        <Ionicons name="sparkles-outline" size={17} color={colors.faint} />
-        <TextInput
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
-          placeholderTextColor={colors.faint}
-          returnKeyType="done"
-          onSubmitEditing={onSubmit}
-          style={styles.addInput}
-        />
+      <View style={styles.addFieldWrap}>
+        <Surface r={radius.md} depth={offsets.sm}>
+          <View style={styles.addField}>
+            <Text style={styles.addHash}>#</Text>
+            <TextInput
+              value={value}
+              onChangeText={onChangeText}
+              placeholder={placeholder}
+              placeholderTextColor={colors.faint}
+              returnKeyType="done"
+              onSubmitEditing={onSubmit}
+              style={styles.addInput}
+            />
+          </View>
+        </Surface>
       </View>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={placeholder}
         disabled={disabled}
         onPress={onSubmit}
-        style={({ pressed }) => [
-          styles.addButton,
-          disabled ? styles.addButtonDisabled : null,
-          pressed ? styles.pressed : null,
-        ]}
+        style={({ pressed }) => (pressed ? styles.pressed : null)}
       >
-        <Ionicons
-          name={icon}
-          size={24}
-          color={disabled ? colors.limeDeep : colors.ink}
-        />
+        <Surface
+          fill={disabled ? pale(colors.lime) : colors.lime}
+          r={radius.md}
+          depth={disabled ? 0 : offsets.sm}
+        >
+          <View style={styles.addButton}>
+            <Ionicons name={icon} size={26} color={colors.ink} />
+          </View>
+        </Surface>
       </Pressable>
     </View>
   );
@@ -445,9 +527,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     gap: spacing.md,
   },
-  titleText: { flex: 1 },
+  titleText: { flex: 1, minWidth: 0 },
   title: { ...type.display, color: colors.ink },
-  subtitle: { fontSize: 14, color: colors.muted, marginTop: 4 },
+  subtitle: { fontSize: 14, color: colors.muted, marginTop: 4, fontWeight: '500' },
 
   sectionRow: {
     flexDirection: 'row',
@@ -458,22 +540,12 @@ const styles = StyleSheet.create({
   },
   sectionHeader: { ...type.h2, color: colors.ink },
 
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    marginBottom: spacing.md,
-    overflow: 'hidden',
-    ...shadow,
-  },
+  cardSpacing: { marginBottom: spacing.md },
   cardPadded: { padding: spacing.lg },
-  cardAccent: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4 },
+  cardAccent: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 6 },
 
-  hero: {
-    borderRadius: radius.xl,
-    padding: spacing.xl,
-    marginBottom: spacing.md,
-    ...glow(colors.blue),
-  },
+  heroSpacing: { marginBottom: spacing.md },
+  hero: { padding: spacing.xl },
   heroTop: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -481,38 +553,36 @@ const styles = StyleSheet.create({
   },
   heroLabel: {
     color: colors.onInk,
-    fontSize: 13,
-    fontWeight: '600',
-    opacity: 0.85,
+    fontSize: 14,
+    fontWeight: '700',
     flex: 1,
+    minWidth: 0,
   },
-  heroCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: radius.pill,
+  heroSquare: {
+    width: 34,
+    height: 34,
+    borderRadius: radius.sm,
     backgroundColor: colors.lime,
+    borderWidth: border.width,
+    borderColor: border.color,
     alignItems: 'center',
     justifyContent: 'center',
   },
   heroValue: {
     color: colors.onInk,
-    fontSize: 46,
+    fontSize: 48,
     fontWeight: '800',
-    letterSpacing: -1.5,
+    letterSpacing: -2,
     marginTop: spacing.md,
   },
-  heroCaption: { color: colors.onInk, opacity: 0.8, fontSize: 13, marginTop: 2 },
+  heroCaption: { color: colors.onInk, fontSize: 13, marginTop: 2, fontWeight: '600' },
 
-  tile: {
-    flex: 1,
-    minWidth: 0,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    ...shadowSoft,
-  },
+  tileWrap: { flex: 1, minWidth: 0 },
+  tile: { padding: spacing.lg },
   tileValue: { ...type.title, color: colors.ink },
-  tileLabel: { fontSize: 12, color: colors.muted, marginTop: 4, fontWeight: '500' },
+  tileLabel: { fontSize: 12, color: colors.muted, marginTop: 4, fontWeight: '600' },
 
+  buttonSpacing: {},
   button: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -520,84 +590,67 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.xl,
-    borderRadius: radius.pill,
   },
-  buttonPrimary: { backgroundColor: colors.ink },
-  buttonLime: { backgroundColor: colors.lime },
-  buttonQuiet: { backgroundColor: colors.surface, ...shadowSoft },
-  buttonDisabled: { backgroundColor: '#E9E9EF' },
-  buttonLabel: { fontSize: 15, fontWeight: '700', letterSpacing: -0.2 },
-  buttonCircle: {
+  buttonLabel: { fontSize: 15, fontWeight: '800', letterSpacing: -0.2 },
+  buttonSquare: {
     width: 26,
     height: 26,
-    borderRadius: radius.pill,
+    borderRadius: 7,
     backgroundColor: colors.lime,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: spacing.xs,
   },
 
-  // A tinted inset rather than a raised surface, so inputs read the same on
-  // the canvas and inside a white card.
+  fieldSpacing: {},
   field: {
-    backgroundColor: colors.inset,
-    borderWidth: 0,
-    borderRadius: radius.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
     fontSize: 15,
     color: colors.ink,
   },
 
-  chip: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm + 2,
-    borderRadius: radius.pill,
-    backgroundColor: colors.inset,
-    maxWidth: 170,
-  },
-  chipLabel: { fontSize: 13, color: colors.muted, fontWeight: '600' },
+  chip: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm + 2, maxWidth: 170 },
+  chipLabel: { fontSize: 13, color: colors.muted, fontWeight: '700' },
 
   pill: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: 4,
-    borderRadius: radius.pill,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: border.width,
+    borderColor: border.color,
     alignSelf: 'flex-start',
   },
-  pillLabel: { fontSize: 10, fontWeight: '800', letterSpacing: 0.4, textTransform: 'uppercase' },
+  pillLabel: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
 
   legend: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  legendDot: { width: 8, height: 8, borderRadius: radius.pill },
-  legendLabel: { fontSize: 12, color: colors.muted, fontWeight: '500' },
-
-  empty: { alignItems: 'center', paddingVertical: spacing.xxl, gap: spacing.xs },
-  emptyIcon: {
-    width: 58,
-    height: 58,
-    borderRadius: radius.md,
-    backgroundColor: colors.lavender,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.sm,
+  legendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: radius.pill,
+    borderWidth: 1.5,
+    borderColor: border.color,
   },
-  emptyTitle: { ...type.h2, color: colors.ink },
+  legendLabel: { fontSize: 12, color: colors.muted, fontWeight: '600' },
+
+  empty: { alignItems: 'center', paddingVertical: spacing.xxl, gap: spacing.sm },
+  emptyIcon: { width: 60, height: 60, alignItems: 'center', justifyContent: 'center' },
+  emptyTitle: { ...type.h2, color: colors.ink, marginTop: spacing.sm },
   emptyBody: {
     fontSize: 14,
     color: colors.muted,
     textAlign: 'center',
     paddingHorizontal: spacing.xl,
     lineHeight: 20,
+    fontWeight: '500',
   },
 
-  iconSurface: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.sm,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...shadowSoft,
-  },
+  iconSurface: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   iconTile: { alignItems: 'center', justifyContent: 'center' },
 
   header: {
@@ -606,34 +659,32 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: spacing.lg,
   },
-  headerSide: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  headerSide: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
 
-  addRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.xl },
+  addRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.xl,
+    alignItems: 'stretch',
+  },
+  addFieldWrap: { flex: 1, minWidth: 0 },
   addField: {
-    flex: 1,
-    minWidth: 0,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
-    ...shadowSoft,
   },
+  addHash: { fontSize: 20, fontWeight: '800', color: colors.ink },
   addInput: { flex: 1, minWidth: 0, fontSize: 15, color: colors.ink },
-  addButton: {
-    width: 58,
-    borderRadius: radius.md,
-    backgroundColor: colors.lime,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...glow(colors.lime),
-  },
-  addButtonDisabled: {
-    backgroundColor: pale(colors.lime),
-    shadowOpacity: 0,
-    elevation: 0,
+  addButton: { width: 56, height: 56, alignItems: 'center', justifyContent: 'center' },
+
+  surfaceWrap: { position: 'relative' },
+  surfaceShadow: { position: 'absolute' },
+  surfaceFace: {
+    borderWidth: border.width,
+    borderColor: border.color,
+    overflow: 'hidden',
   },
 
   pressed: { opacity: 0.6 },

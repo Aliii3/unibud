@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import type { ColorValue } from 'react-native';
 
-import { colors, glow, radius, spacing } from '@/theme';
+import { border, colors, radius, spacing } from '@/theme';
 
 /**
  * Home is last in the bar, as drawn on page 3 of the notes, but it is still
@@ -24,7 +24,8 @@ export default function TabsLayout() {
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         tabBarStyle: {
           backgroundColor: colors.surface,
-          borderTopWidth: 0,
+          borderTopWidth: border.width,
+          borderTopColor: border.color,
           paddingTop: spacing.sm,
           height: 88,
         },
@@ -82,13 +83,14 @@ function TabIcon({
         focused
           ? {
               backgroundColor: colors.lime,
-              borderRadius: radius.pill,
+              borderRadius: radius.sm,
+              borderWidth: border.width,
+              borderColor: border.color,
               paddingHorizontal: spacing.lg,
-              paddingVertical: spacing.sm - 2,
+              paddingVertical: spacing.sm - 3,
               overflow: 'hidden',
-              ...glow(colors.lime),
             }
-          : { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm - 2 }
+          : { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm - 1 }
       }
     />
   );

@@ -17,7 +17,7 @@ import { createSlot, deleteSlot, listSlotsForWeek } from '@/db/schedule';
 import { listSubjects, type SubjectSummary } from '@/db/subjects';
 import { clockToMinutes, minutesToClock, WEEKDAYS, WEEKDAYS_SHORT } from '@/lib/format';
 import { useQuery } from '@/lib/useQuery';
-import { colors, radius, shadow, spacing } from '@/theme';
+import { border, colors, radius, spacing } from '@/theme';
 
 /** "add your subjects and schedule" — the weekly timetable. */
 export default function ScheduleScreen() {
@@ -187,7 +187,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     padding: spacing.lg,
     gap: spacing.md,
-    ...shadow,
+    borderWidth: border.width,
+    borderColor: border.color,
   },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
   times: { flexDirection: 'row', gap: spacing.sm },

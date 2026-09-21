@@ -19,7 +19,7 @@ import { listSubjects, type SubjectSummary } from '@/db/subjects';
 import { createTodo, deleteTodo, listTodos, toggleTodo } from '@/db/todos';
 import type { Todo, WithSubject } from '@/db/types';
 import { useQuery } from '@/lib/useQuery';
-import { colors, radius, shadow, spacing } from '@/theme';
+import { border, colors, radius, spacing } from '@/theme';
 
 /** The "todo" tab: tasks from every subject in one list. */
 export default function TodoScreen() {
@@ -184,7 +184,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     padding: spacing.lg,
     gap: spacing.md,
-    ...shadow,
+    borderWidth: border.width,
+    borderColor: border.color,
   },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },

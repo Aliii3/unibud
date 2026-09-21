@@ -25,7 +25,7 @@ import { formatDueDate, minutesToClock, WEEKDAYS_SHORT } from '@/lib/format';
 import { cancel } from '@/lib/notifications';
 import { pickDocumentForSubject } from '@/lib/pickDocument';
 import { useQuery } from '@/lib/useQuery';
-import { colors, onSubject, radius, shadow, spacing } from '@/theme';
+import { border, colors, onSubject, radius, spacing } from '@/theme';
 
 type Section = 'doc' | 'todo' | 'deadline';
 
@@ -383,7 +383,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     padding: 4,
     marginBottom: spacing.lg,
-    ...shadow,
+    borderWidth: border.width,
+    borderColor: border.color,
   },
   segment: {
     flex: 1,
@@ -408,7 +409,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    ...shadow,
+    borderWidth: border.width,
+    borderColor: border.color,
   },
   slotDay: { fontSize: 12, fontWeight: '800' },
   slotTime: { fontSize: 12, color: colors.muted, fontWeight: '500' },

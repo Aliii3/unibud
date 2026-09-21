@@ -19,17 +19,24 @@ Palette and layout language come from the supplied references:
 | `lime` | `#D2FC59` | action circles, active tab, highlight tiles |
 | `lavender` | `#DAD9FB` | secondary tiles, empty-state marks |
 
-Everything lives in `src/theme.ts` (colours, spacing, radii, one shared
-shadow) and `src/components/ui.tsx` (the primitives every screen composes
-from). Change a token there and it propagates.
+Everything lives in `src/theme.ts` (colours, spacing, radii, border weight,
+shadow offsets) and `src/components/ui.tsx` (the primitives every screen
+composes from). Change a token there and it propagates.
 
-The look: big tight two-line headlines, subjects drawn as folder cards with a
-coloured tab and a gradient icon tile, black pill buttons carrying a lime
-action circle, and depth built from light — wide soft shadows plus coloured
-glows (`glow()`) rather than outlines.
+The look is the second reference's: a cream ground, crisp corners, a 2px
+black outline on everything raised, and a solid black rectangle offset down
+and right instead of a blur.
+
+`Surface` is the primitive that draws it. React Native cannot produce a hard
+shadow portably — iOS could with `shadowRadius: 0`, but Android's elevation
+always blurs — so the shadow is a real `View` behind an outlined face. Pass
+margins via its `style` (the wrapper), never `faceStyle`: the shadow is
+measured against the wrapper, so a margin on the face pads the wrapper and
+thickens the drawn shadow by that much.
 
 Each subject is assigned a colour and an Ionicons name on create, cycled
 through `subjectColors` and `subjectIcons` so neighbours in the grid differ.
+The most recently added subject wears a NEW badge for 24 hours.
 
 ## Stack
 

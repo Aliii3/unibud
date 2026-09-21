@@ -13,7 +13,7 @@ import {
 } from '@/db/settings';
 import { clockToMinutes, minutesToClock } from '@/lib/format';
 import { cancel, ensurePermissions, scheduleDailyPrompt } from '@/lib/notifications';
-import { colors, radius, spacing } from '@/theme';
+import { border, colors, radius, spacing } from '@/theme';
 
 /**
  * "asks daily for your deadlines and assignments" — the one recurring
@@ -168,6 +168,8 @@ const styles = StyleSheet.create({
     color: colors.ink,
     backgroundColor: colors.lavender,
     borderRadius: radius.md,
+    borderWidth: border.width,
+    borderColor: border.color,
     padding: spacing.lg,
     overflow: 'hidden',
   },
