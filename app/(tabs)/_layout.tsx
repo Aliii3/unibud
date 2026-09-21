@@ -4,11 +4,15 @@ import { Tabs } from 'expo-router';
 import { colors } from '@/theme';
 
 /**
- * The four tabs sketched on page 3 of the notes: doc, todo, deadline, home.
- * Home is placed first here because it is the entry point and the tab a
- * cold launch lands on; the sketch drew it last. Reorder the <Tabs.Screen>
- * entries to match the sketch exactly if that is preferred.
+ * Home is last in the bar, as drawn on page 3 of the notes, but it is still
+ * the tab a cold launch lands on — an empty Doc list is a poor first screen.
+ * Tab order follows the order these <Tabs.Screen> entries are declared in.
  */
+export const unstable_settings = {
+  initialRouteName: 'index',
+};
+
+/** The four tabs sketched on page 3 of the notes: doc, todo, deadline, home. */
 export default function TabsLayout() {
   return (
     <Tabs
@@ -19,15 +23,6 @@ export default function TabsLayout() {
         tabBarStyle: { borderTopColor: colors.line },
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid-outline" color={color} size={size} />
-          ),
-        }}
-      />
       <Tabs.Screen
         name="docs"
         options={{
@@ -52,6 +47,15 @@ export default function TabsLayout() {
           title: 'Deadline',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="alarm-outline" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="grid-outline" color={color} size={size} />
           ),
         }}
       />

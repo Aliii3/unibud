@@ -81,9 +81,10 @@ Deliberately not built yet:
 
 Two deviations from the notes worth knowing about:
 
-- The sketch drew the tab bar as `doc | todo | deadline | home`. Home is first
-  here because it is the entry point and a cold launch has to land somewhere
-  useful. Reorder the `<Tabs.Screen>` entries in `app/(tabs)/_layout.tsx` to
-  match the sketch exactly.
+- The tab bar is ordered `doc | todo | deadline | home`, as drawn. Home is
+  still the tab a cold launch lands on — `unstable_settings.initialRouteName`
+  in `app/(tabs)/_layout.tsx` pins that, since an empty Doc list is a poor
+  first screen. Tab order follows the order the `<Tabs.Screen>` entries are
+  declared in.
 - Inside a subject, the three subject-scoped sections are a segmented control
   rather than a second tab bar, so the app-level tabs stay reachable.
