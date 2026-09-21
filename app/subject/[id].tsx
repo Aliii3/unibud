@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colors.surface,
     borderRadius: radius.pill,
-    padding: 4,
+    padding: 5,
     marginBottom: spacing.lg,
     borderWidth: border.width,
     borderColor: border.color,

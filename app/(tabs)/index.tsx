@@ -99,12 +99,14 @@ export default function HomeScreen() {
 
             {subjects.length > 0 ? (
               <HeroStat
-                value={String(openDeadlines)}
-                label="Due soon"
+                tone={openDeadlines === 0 ? 'lime' : 'blue'}
+                icon={openDeadlines === 0 ? 'checkmark-circle' : undefined}
+                value={openDeadlines === 0 ? 'All clear' : String(openDeadlines)}
+                label={openDeadlines === 0 ? 'Nothing due' : 'Due soon'}
                 caption={
                   openTodos > 0
                     ? `${openTodos} task${openTodos === 1 ? '' : 's'} still open`
-                    : 'No open tasks'
+                    : 'No open tasks either'
                 }
                 onPress={() => router.push('/deadlines')}
               />

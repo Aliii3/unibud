@@ -21,15 +21,21 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.ink,
         tabBarInactiveTintColor: colors.faint,
         tabBarShowLabel: true,
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+        tabBarLabelStyle: {
+          fontSize: 10,
+          fontWeight: '700',
+          letterSpacing: -0.1,
+          marginTop: -2,
+        },
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopWidth: border.width,
           borderTopColor: border.color,
-          paddingTop: spacing.sm,
-          height: 88,
+          paddingTop: 7,
+          paddingBottom: 10,
+          height: 72,
         },
-        tabBarItemStyle: { paddingVertical: spacing.xs },
+        tabBarItemStyle: { paddingVertical: 0 },
       }}
     >
       <Tabs.Screen
@@ -78,19 +84,26 @@ function TabIcon({
     <Ionicons
       name={focused ? name : (`${name}-outline` as keyof typeof Ionicons.glyphMap)}
       color={color as string}
-      size={22}
+      size={19}
       style={
         focused
           ? {
               backgroundColor: colors.lime,
-              borderRadius: radius.sm,
-              borderWidth: border.width,
+              borderRadius: 8,
+              borderWidth: 1.5,
               borderColor: border.color,
-              paddingHorizontal: spacing.lg,
-              paddingVertical: spacing.sm - 3,
+              paddingHorizontal: spacing.md,
+              paddingVertical: 2,
               overflow: 'hidden',
             }
-          : { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm - 1 }
+          : {
+              // A transparent border keeps inactive icons the same height as
+              // the active one, so the labels sit on a common baseline.
+              borderWidth: 1.5,
+              borderColor: 'transparent',
+              paddingHorizontal: spacing.md,
+              paddingVertical: 2,
+            }
       }
     />
   );

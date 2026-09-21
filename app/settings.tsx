@@ -111,7 +111,10 @@ export default function SettingsScreen() {
           <Switch
             value={enabled}
             onValueChange={setEnabled}
-            trackColor={{ true: colors.blue, false: colors.line }}
+            // The platform default thumb is green, which fights the palette.
+            trackColor={{ true: colors.blue, false: colors.inset }}
+            thumbColor={colors.surface}
+            ios_backgroundColor={colors.inset}
           />
         </View>
       </Card>

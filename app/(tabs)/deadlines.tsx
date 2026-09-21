@@ -10,7 +10,6 @@ import {
   Card,
   EmptyState,
   IconButton,
-  LegendDot,
   Loading,
   Pill,
   ScreenTitle,
@@ -75,12 +74,6 @@ export default function DeadlinesScreen() {
           <StatTile value={String(overdue.length)} label="Overdue" tone="lime" />
           <StatTile value={String(thisWeek.length)} label="Next 7 days" tone="lavender" />
           <StatTile value={String(deadlines.length)} label="Open total" />
-        </View>
-
-        <View style={styles.legendRow}>
-          <LegendDot color={colors.danger} label="Overdue" />
-          <LegendDot color={colors.blue} label="Upcoming" />
-          <LegendDot color={colors.ink} label="Quiz or exam" />
         </View>
 
         {adding ? (
@@ -189,14 +182,7 @@ function DeadlineRow({
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.canvas },
   content: { padding: spacing.lg, paddingBottom: spacing.xxl },
-  tiles: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
-  legendRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.lg,
-    marginBottom: spacing.lg,
-    paddingHorizontal: spacing.xs,
-  },
+  tiles: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.xl },
   cta: { marginBottom: spacing.sm },
   form: { marginBottom: spacing.sm },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },

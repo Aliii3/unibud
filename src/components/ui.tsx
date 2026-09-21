@@ -145,33 +145,53 @@ export function Card({
 }
 
 /**
- * The hero panel: one headline number on a saturated block, with a lime
- * action square, as in the reference's collection header.
+ * The hero panel: one headline figure on a saturated block with a square
+ * action, as in the reference's collection header. `tone` lets a screen show
+ * a settled state in lime rather than a stark zero on blue.
  */
 export function HeroStat({
   value,
   label,
   caption,
   onPress,
+  tone = 'blue',
+  icon,
 }: {
   value: string;
   label: string;
   caption?: string;
   onPress?: () => void;
+  tone?: 'blue' | 'lime';
+  icon?: keyof typeof Ionicons.glyphMap;
 }) {
+  const onFill = tone === 'lime' ? colors.ink : colors.onInk;
   const body = (
-    <Surface fill={colors.blue} r={radius.lg} style={styles.heroSpacing}>
+    <Surface
+      fill={tone === 'lime' ? colors.lime : colors.blue}
+      r={radius.lg}
+      style={styles.heroSpacing}
+    >
       <View style={styles.hero}>
         <View style={styles.heroTop}>
-          <Text style={styles.heroLabel}>{label}</Text>
+          <Text style={[styles.heroLabel, { color: onFill }]}>{label}</Text>
           {onPress ? (
-            <View style={styles.heroSquare}>
+            <View
+              style={[
+                styles.heroSquare,
+                tone === 'lime' ? { backgroundColor: colors.surface } : null,
+              ]}
+            >
               <Ionicons name="arrow-forward" size={18} color={colors.ink} />
             </View>
           ) : null}
         </View>
-        <Text style={styles.heroValue}>{value}</Text>
-        {caption ? <Text style={styles.heroCaption}>{caption}</Text> : null}
+        <View style={styles.heroFigure}>
+          {icon ? <Ionicons name={icon} size={38} color={onFill} /> : null}
+          <Text style={[styles.heroValue, { color: onFill }]}>{value}</Text>
+        </View>
+        {caption ? (
+          <Text style={[styles.heroCaption, { color: onFill }]}>{caption}</Text>
+        ) : null}
       </View>
     </Surface>
   );
@@ -536,11 +556,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: spacing.xl,
-    marginBottom: spacing.md,
+    marginBottom: spacing.lg,
   },
   sectionHeader: { ...type.h2, color: colors.ink },
 
-  cardSpacing: { marginBottom: spacing.md },
+  cardSpacing: { marginBottom: spacing.lg },
   cardPadded: { padding: spacing.lg },
   cardAccent: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 6 },
 
@@ -552,7 +572,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   heroLabel: {
-    color: colors.onInk,
     fontSize: 14,
     fontWeight: '700',
     flex: 1,
@@ -568,14 +587,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  heroValue: {
-    color: colors.onInk,
-    fontSize: 48,
-    fontWeight: '800',
-    letterSpacing: -2,
+  heroFigure: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
     marginTop: spacing.md,
   },
-  heroCaption: { color: colors.onInk, fontSize: 13, marginTop: 2, fontWeight: '600' },
+  heroValue: { fontSize: 46, fontWeight: '800', letterSpacing: -2 },
+  heroCaption: { fontSize: 13, marginTop: 2, fontWeight: '600' },
 
   tileWrap: { flex: 1, minWidth: 0 },
   tile: { padding: spacing.lg },

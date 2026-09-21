@@ -49,7 +49,10 @@ export default function RootLayout() {
               screenOptions={{
                 headerShadowVisible: false,
                 headerTintColor: colors.ink,
-                headerTitleStyle: { color: colors.ink },
+                headerTitleStyle: { color: colors.ink, fontWeight: '800' },
+                // Match the canvas, or the header reads as a white band
+                // sitting on cream.
+                headerStyle: { backgroundColor: colors.canvas },
                 contentStyle: { backgroundColor: colors.canvas },
               }}
             >

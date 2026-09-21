@@ -178,10 +178,10 @@ function TodoRow({
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.canvas },
   content: { padding: spacing.lg, paddingBottom: spacing.xxl },
-  tiles: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
+  tiles: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.xl },
   composer: {
     backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    borderRadius: radius.md,
     padding: spacing.lg,
     gap: spacing.md,
     borderWidth: border.width,
