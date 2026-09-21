@@ -130,6 +130,29 @@ the privacy questionnaire — which for Unibud is "no data collected", since
 everything is stored on the device and nothing is sent anywhere. A build
 must have run through `eas build` before `eas submit` has anything to send.
 
+## Public pages
+
+`docs/` doubles as the site GitHub Pages serves, which covers the two URLs
+App Store Connect insists on:
+
+| Page | Serves as |
+| --- | --- |
+| `docs/index.html` | the Support URL, and a plain landing page |
+| `docs/privacy.html` | the Privacy policy URL |
+| `docs/privacy.md` | the same policy as readable source |
+
+Enable them in Settings → Pages → *Deploy from a branch*, folder `/docs`.
+`docs/.nojekyll` stops Jekyll rewriting anything.
+
+**Before publishing, replace `CONTACT_EMAIL`** in `docs/index.html`,
+`docs/privacy.html` and `docs/privacy.md`. These pages are public, so that
+address is public too.
+
+The policy says the app collects nothing and makes no network requests.
+That is checked, not assumed — no fetch or upload call in `app/` or `src/`,
+no analytics package, and `expo-updates` is not installed. If any of that
+changes, the policy has to change with it.
+
 ## Tests
 
 `npm run test:schema` runs the real migrations from `src/db/schema.ts`

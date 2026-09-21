@@ -86,6 +86,13 @@ Everything stays on your device. No account, no sync, no tracking.
 - **Age rating** — 4+. No user content, no web views, no ads.
 - **Privacy** — "Data Not Collected". Everything is device-local SQLite and
   the app makes no network requests, so every question answers the same way.
-- **Support URL** — required. A GitHub repo page or a one-page site is fine.
+- **Support URL** — `https://aliii3.github.io/unibud/`
+- **Privacy policy URL** — `https://aliii3.github.io/unibud/privacy.html`
+
+  Both are in `docs/`. Turn them on once in the repo's
+  Settings → Pages → *Deploy from a branch* → the working branch, folder
+  `/docs`. Replace `CONTACT_EMAIL` in `docs/index.html`,
+  `docs/privacy.html` and `docs/privacy.md` first — the pages are public,
+  so put in whichever address you are happy to publish.
 - **Sign-in** — do not supply a demo account; there is no login. Say so in
   the review notes so a reviewer is not left looking for one.
