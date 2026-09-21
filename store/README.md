@@ -27,10 +27,21 @@ of empty space. Shipping that as iPad support risks a rejection under
 guideline 2.4.1. Turning tablet support back on means designing wider
 layouts first, then adding a 13" iPad set (2064x2752).
 
+## Listing copy
+
+`listing.md` holds every text field. `npm run check:listing` parses it and
+fails if a field is over its App Store Connect limit, or if the keywords
+repeat a word already indexed from the name or subtitle — Connect only tells
+you on submit, which is a slow way to find out.
+
+The copy claims nothing the app does not do: there is no sync, no sharing,
+and documents are stored and listed but not opened for reading, so none of
+that appears.
+
 ## Still to write by hand
 
-- App name, subtitle, keywords, description
 - Support and marketing URLs
 - Privacy policy URL
-- The privacy questionnaire: Unibud collects nothing. Everything is in
-  device-local SQLite and no request leaves the phone.
+- The privacy questionnaire: "Data Not Collected". Everything is in
+  device-local SQLite, and the app makes no network requests — verified by
+  grep: no fetch, no analytics package, no expo-updates.
