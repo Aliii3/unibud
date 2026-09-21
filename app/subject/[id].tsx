@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useState } from 'react';
@@ -10,6 +11,7 @@ import {
   EmptyState,
   Field,
   IconButton,
+  IconTile,
   Loading,
   ScreenTitle,
 } from '@/components/ui';
@@ -98,7 +100,16 @@ export default function SubjectScreen() {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        <ScreenTitle title={subject.data.name} />
+        <View style={styles.identity}>
+          <IconTile
+            icon={subject.data.icon as keyof typeof Ionicons.glyphMap}
+            color={tint}
+            size={56}
+          />
+          <View style={styles.identityText}>
+            <ScreenTitle title={subject.data.name} />
+          </View>
+        </View>
         <SubjectSchedule subjectId={subjectId} tint={tint} />
 
         <View style={styles.segments}>
@@ -364,6 +375,8 @@ function DeadlinesSection({ subjectId }: { subjectId: number }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.canvas },
   content: { padding: spacing.lg, paddingBottom: spacing.xxl },
+  identity: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
+  identityText: { flex: 1, minWidth: 0, paddingTop: spacing.md },
   segments: {
     flexDirection: 'row',
     backgroundColor: colors.surface,

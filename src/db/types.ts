@@ -4,6 +4,8 @@ export interface Subject {
   id: number;
   name: string;
   color: string;
+  /** An Ionicons name, assigned on create. */
+  icon: string;
   created_at: number;
 }
 

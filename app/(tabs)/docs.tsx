@@ -9,6 +9,7 @@ import {
   Card,
   EmptyState,
   IconButton,
+  IconTile,
   Loading,
   ScreenTitle,
   SectionHeader,
@@ -19,7 +20,7 @@ import type { WithSubject } from '@/db/types';
 import { formatBytes } from '@/lib/files';
 import { pickDocumentForSubject } from '@/lib/pickDocument';
 import { useQuery } from '@/lib/useQuery';
-import { colors, onSubject, radius, spacing } from '@/theme';
+import { colors, spacing } from '@/theme';
 
 /** The "doc" tab: every uploaded document, newest first. */
 export default function DocsScreen() {
@@ -137,11 +138,7 @@ function DocRow({
   return (
     <Card onPress={onOpen}>
       <View style={styles.row}>
-        <View style={[styles.badge, { backgroundColor: doc.subject_color }]}>
-          <Text style={[styles.badgeText, { color: onSubject(doc.subject_color) }]}>
-            {extensionOf(doc.name)}
-          </Text>
-        </View>
+        <IconTile icon="document-text" color={doc.subject_color} />
         <View style={styles.rowBody}>
           <Text style={styles.rowTitle} numberOfLines={1}>
             {doc.name}
@@ -159,12 +156,6 @@ function DocRow({
   );
 }
 
-function extensionOf(name: string): string {
-  const dot = name.lastIndexOf('.');
-  if (dot < 0 || dot === name.length - 1) return 'FILE';
-  return name.slice(dot + 1).toUpperCase().slice(0, 4);
-}
-
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.canvas },
   content: { padding: spacing.lg, paddingBottom: spacing.xxl },
@@ -172,12 +163,4 @@ const styles = StyleSheet.create({
   rowBody: { flex: 1, minWidth: 0 },
   rowTitle: { fontSize: 15, fontWeight: '700', color: colors.ink, letterSpacing: -0.2 },
   rowMeta: { fontSize: 12, color: colors.muted, marginTop: 2, fontWeight: '500' },
-  badge: {
-    width: 46,
-    height: 46,
-    borderRadius: radius.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  badgeText: { fontSize: 11, fontWeight: '800' },
 });

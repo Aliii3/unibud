@@ -24,8 +24,12 @@ shadow) and `src/components/ui.tsx` (the primitives every screen composes
 from). Change a token there and it propagates.
 
 The look: big tight two-line headlines, subjects drawn as folder cards with a
-coloured tab, black pill buttons carrying a lime action circle, and one soft
-elevation rather than outlines.
+coloured tab and a gradient icon tile, black pill buttons carrying a lime
+action circle, and depth built from light — wide soft shadows plus coloured
+glows (`glow()`) rather than outlines.
+
+Each subject is assigned a colour and an Ionicons name on create, cycled
+through `subjectColors` and `subjectIcons` so neighbours in the grid differ.
 
 ## Stack
 

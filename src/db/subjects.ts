@@ -1,6 +1,6 @@
 import type * as SQLite from 'expo-sqlite';
 
-import { subjectColors } from '../theme';
+import { subjectColors, subjectIcons } from '../theme';
 import type { Subject } from './types';
 
 export interface SubjectSummary extends Subject {
@@ -36,16 +36,17 @@ export async function createSubject(
   db: SQLite.SQLiteDatabase,
   name: string
 ): Promise<number> {
-  // Cycle the palette by how many subjects already exist, so a new subject
-  // rarely lands on the same colour as its neighbour in the grid.
+  // Cycle the palette and icon set by how many subjects already exist, so a
+  // new subject rarely matches its neighbour in the grid.
   const count = await db.getFirstAsync<{ n: number }>(
     'SELECT COUNT(*) AS n FROM subjects'
   );
-  const color = subjectColors[(count?.n ?? 0) % subjectColors.length];
+  const n = count?.n ?? 0;
   const result = await db.runAsync(
-    'INSERT INTO subjects (name, color, created_at) VALUES (?, ?, ?)',
+    'INSERT INTO subjects (name, color, icon, created_at) VALUES (?, ?, ?, ?)',
     name.trim(),
-    color,
+    subjectColors[n % subjectColors.length],
+    subjectIcons[n % subjectIcons.length],
     Date.now()
   );
   return result.lastInsertRowId;

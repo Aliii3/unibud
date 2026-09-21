@@ -71,4 +71,9 @@ export const MIGRATIONS: string[] = [
     value TEXT NOT NULL
   );
   `,
+
+  // v2 — each subject carries an icon, shown on its folder card.
+  `
+  ALTER TABLE subjects ADD COLUMN icon TEXT NOT NULL DEFAULT 'book';
+  `,
 ];

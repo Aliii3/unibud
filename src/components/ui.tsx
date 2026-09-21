@@ -11,7 +11,18 @@ import {
   View,
 } from 'react-native';
 
-import { colors, onSubject, radius, shadow, spacing, type } from '../theme';
+import {
+  colors,
+  glow,
+  lighten,
+  pale,
+  onSubject,
+  radius,
+  shadow,
+  shadowSoft,
+  spacing,
+  type,
+} from '../theme';
 
 /** Big, tight headline. The subtitle sits under it in muted grey. */
 export function ScreenTitle({
@@ -327,6 +338,105 @@ export function IconButton({
   );
 }
 
+/**
+ * A rounded square carrying an icon, filled with a soft gradient of the
+ * subject's colour. This is the mark used on folder cards and doc rows.
+ */
+export function IconTile({
+  icon,
+  color,
+  size = 46,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  color: string;
+  size?: number;
+}) {
+  return (
+    <LinearGradient
+      colors={[lighten(color), color]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={[
+        styles.iconTile,
+        { width: size, height: size, borderRadius: size * 0.34 },
+        glow(color, 0.55),
+      ]}
+    >
+      <Ionicons name={icon} size={size * 0.46} color={onSubject(color)} />
+    </LinearGradient>
+  );
+}
+
+/** Top bar of round controls, as in the reference's header. */
+export function ScreenHeader({
+  left,
+  right,
+}: {
+  left?: ReactNode;
+  right?: ReactNode;
+}) {
+  return (
+    <View style={styles.header}>
+      <View style={styles.headerSide}>{left}</View>
+      <View style={styles.headerSide}>{right}</View>
+    </View>
+  );
+}
+
+/**
+ * An always-visible input with a square action button beside it, mirroring
+ * the reference's paste-to-save row.
+ */
+export function AddRow({
+  value,
+  onChangeText,
+  placeholder,
+  onSubmit,
+  icon = 'add',
+  disabled,
+}: {
+  value: string;
+  onChangeText: (next: string) => void;
+  placeholder: string;
+  onSubmit: () => void;
+  icon?: keyof typeof Ionicons.glyphMap;
+  disabled?: boolean;
+}) {
+  return (
+    <View style={styles.addRow}>
+      <View style={styles.addField}>
+        <Ionicons name="sparkles-outline" size={17} color={colors.faint} />
+        <TextInput
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor={colors.faint}
+          returnKeyType="done"
+          onSubmitEditing={onSubmit}
+          style={styles.addInput}
+        />
+      </View>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={placeholder}
+        disabled={disabled}
+        onPress={onSubmit}
+        style={({ pressed }) => [
+          styles.addButton,
+          disabled ? styles.addButtonDisabled : null,
+          pressed ? styles.pressed : null,
+        ]}
+      >
+        <Ionicons
+          name={icon}
+          size={24}
+          color={disabled ? colors.limeDeep : colors.ink}
+        />
+      </Pressable>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   titleRow: {
     flexDirection: 'row',
@@ -350,7 +460,7 @@ const styles = StyleSheet.create({
 
   card: {
     backgroundColor: colors.surface,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     marginBottom: spacing.md,
     overflow: 'hidden',
     ...shadow,
@@ -359,10 +469,10 @@ const styles = StyleSheet.create({
   cardAccent: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4 },
 
   hero: {
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     padding: spacing.xl,
     marginBottom: spacing.md,
-    ...shadow,
+    ...glow(colors.blue),
   },
   heroTop: {
     flexDirection: 'row',
@@ -396,9 +506,9 @@ const styles = StyleSheet.create({
   tile: {
     flex: 1,
     minWidth: 0,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.lg,
-    ...shadow,
+    ...shadowSoft,
   },
   tileValue: { ...type.title, color: colors.ink },
   tileLabel: { fontSize: 12, color: colors.muted, marginTop: 4, fontWeight: '500' },
@@ -414,7 +524,7 @@ const styles = StyleSheet.create({
   },
   buttonPrimary: { backgroundColor: colors.ink },
   buttonLime: { backgroundColor: colors.lime },
-  buttonQuiet: { backgroundColor: colors.surface, ...shadow },
+  buttonQuiet: { backgroundColor: colors.surface, ...shadowSoft },
   buttonDisabled: { backgroundColor: '#E9E9EF' },
   buttonLabel: { fontSize: 15, fontWeight: '700', letterSpacing: -0.2 },
   buttonCircle: {
@@ -430,9 +540,8 @@ const styles = StyleSheet.create({
   // A tinted inset rather than a raised surface, so inputs read the same on
   // the canvas and inside a white card.
   field: {
-    backgroundColor: '#F1F1F5',
-    borderWidth: 1,
-    borderColor: colors.line,
+    backgroundColor: colors.inset,
+    borderWidth: 0,
     borderRadius: radius.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
@@ -444,9 +553,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm + 2,
     borderRadius: radius.pill,
-    borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.inset,
     maxWidth: 170,
   },
   chipLabel: { fontSize: 13, color: colors.muted, fontWeight: '600' },
@@ -465,9 +572,9 @@ const styles = StyleSheet.create({
 
   empty: { alignItems: 'center', paddingVertical: spacing.xxl, gap: spacing.xs },
   emptyIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: radius.pill,
+    width: 58,
+    height: 58,
+    borderRadius: radius.md,
     backgroundColor: colors.lavender,
     alignItems: 'center',
     justifyContent: 'center',
@@ -483,13 +590,51 @@ const styles = StyleSheet.create({
   },
 
   iconSurface: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.pill,
+    width: 44,
+    height: 44,
+    borderRadius: radius.sm,
     backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
-    ...shadow,
+    ...shadowSoft,
   },
+  iconTile: { alignItems: 'center', justifyContent: 'center' },
+
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.lg,
+  },
+  headerSide: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+
+  addRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.xl },
+  addField: {
+    flex: 1,
+    minWidth: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
+    ...shadowSoft,
+  },
+  addInput: { flex: 1, minWidth: 0, fontSize: 15, color: colors.ink },
+  addButton: {
+    width: 58,
+    borderRadius: radius.md,
+    backgroundColor: colors.lime,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...glow(colors.lime),
+  },
+  addButtonDisabled: {
+    backgroundColor: pale(colors.lime),
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+
   pressed: { opacity: 0.6 },
 });
