@@ -13,7 +13,7 @@ import { colors, spacing } from '@/theme';
 function Booting() {
   return (
     <View style={styles.center}>
-      <ActivityIndicator color={colors.accent} />
+      <ActivityIndicator color={colors.blue} />
     </View>
   );
 }
@@ -48,7 +48,7 @@ export default function RootLayout() {
             <Stack
               screenOptions={{
                 headerShadowVisible: false,
-                headerTintColor: colors.accent,
+                headerTintColor: colors.ink,
                 headerTitleStyle: { color: colors.ink },
                 contentStyle: { backgroundColor: colors.canvas },
               }}

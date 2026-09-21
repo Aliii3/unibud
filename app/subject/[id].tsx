@@ -23,7 +23,7 @@ import { formatDueDate, minutesToClock, WEEKDAYS_SHORT } from '@/lib/format';
 import { cancel } from '@/lib/notifications';
 import { pickDocumentForSubject } from '@/lib/pickDocument';
 import { useQuery } from '@/lib/useQuery';
-import { colors, radius, spacing } from '@/theme';
+import { colors, onSubject, radius, shadow, spacing } from '@/theme';
 
 type Section = 'doc' | 'todo' | 'deadline';
 
@@ -113,7 +113,10 @@ export default function SubjectScreen() {
                 style={[styles.segment, active ? { backgroundColor: tint } : null]}
               >
                 <Text
-                  style={[styles.segmentLabel, active ? styles.segmentActive : null]}
+                  style={[
+                    styles.segmentLabel,
+                    active ? { color: onSubject(tint), fontWeight: '800' } : null,
+                  ]}
                 >
                   {s.label}
                 </Text>
@@ -137,7 +140,7 @@ function SubjectSchedule({ subjectId, tint }: { subjectId: number; tint: string 
   return (
     <View style={styles.slots}>
       {slots.map((slot) => (
-        <View key={slot.id} style={[styles.slot, { borderColor: `${tint}55` }]}>
+        <View key={slot.id} style={styles.slot}>
           <Text style={[styles.slotDay, { color: tint }]}>
             {WEEKDAYS_SHORT[slot.weekday]}
           </Text>
@@ -247,7 +250,7 @@ function TodosSection({ subjectId }: { subjectId: number }) {
             <IconButton
               icon={todo.done ? 'checkbox' : 'square-outline'}
               label={`${todo.done ? 'Reopen' : 'Complete'} ${todo.title}`}
-              color={todo.done ? colors.accent : colors.muted}
+              color={todo.done ? colors.blue : colors.ink}
               onPress={async () => {
                 await toggleTodo(db, todo.id);
                 refresh();
@@ -310,7 +313,7 @@ function DeadlinesSection({ subjectId }: { subjectId: number }) {
             <IconButton
               icon={deadline.done ? 'checkmark-circle' : 'ellipse-outline'}
               label={`${deadline.done ? 'Reopen' : 'Complete'} ${deadline.title}`}
-              color={deadline.done ? colors.accent : colors.muted}
+              color={deadline.done ? colors.blue : colors.ink}
               onPress={async () => {
                 await setDeadlineDone(db, deadline.id, deadline.done === 0);
                 if (deadline.done === 0) await cancel(deadline.reminder_id);
@@ -364,36 +367,48 @@ const styles = StyleSheet.create({
   segments: {
     flexDirection: 'row',
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: radius.sm,
-    padding: 3,
+    borderRadius: radius.pill,
+    padding: 4,
     marginBottom: spacing.lg,
+    ...shadow,
   },
   segment: {
     flex: 1,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.sm - 2,
+    minWidth: 0,
+    paddingVertical: spacing.md,
+    borderRadius: radius.pill,
     alignItems: 'center',
   },
   segmentLabel: { fontSize: 14, fontWeight: '600', color: colors.muted },
-  segmentActive: { color: colors.surface },
-  slots: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginBottom: spacing.lg },
+  segmentActive: { color: colors.onInk },
+  slots: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
+    marginBottom: spacing.lg,
+  },
   slot: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    borderWidth: 1,
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
+    backgroundColor: colors.surface,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    ...shadow,
   },
-  slotDay: { fontSize: 12, fontWeight: '700' },
-  slotTime: { fontSize: 12, color: colors.muted },
+  slotDay: { fontSize: 12, fontWeight: '800' },
+  slotTime: { fontSize: 12, color: colors.muted, fontWeight: '500' },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  rowBody: { flex: 1 },
-  rowTitle: { fontSize: 15, fontWeight: '500', color: colors.ink },
-  rowMeta: { fontSize: 12, color: colors.muted, marginTop: 2, textTransform: 'capitalize' },
+  rowBody: { flex: 1, minWidth: 0 },
+  rowTitle: { fontSize: 15, fontWeight: '600', color: colors.ink },
+  rowMeta: {
+    fontSize: 12,
+    color: colors.muted,
+    marginTop: 2,
+    textTransform: 'capitalize',
+    fontWeight: '500',
+  },
   struck: { textDecorationLine: 'line-through', color: colors.faint },
-  composer: { gap: spacing.sm, marginTop: spacing.sm },
+  composer: { gap: spacing.md, marginTop: spacing.sm },
 });

@@ -11,6 +11,7 @@ import {
   IconButton,
   Loading,
   ScreenTitle,
+  SectionHeader,
 } from '@/components/ui';
 import { deleteDocument, listDocuments, type DocSummary } from '@/db/documents';
 import { listSubjects, type SubjectSummary } from '@/db/subjects';
@@ -18,7 +19,7 @@ import type { WithSubject } from '@/db/types';
 import { formatBytes } from '@/lib/files';
 import { pickDocumentForSubject } from '@/lib/pickDocument';
 import { useQuery } from '@/lib/useQuery';
-import { colors, radius, spacing } from '@/theme';
+import { colors, onSubject, radius, spacing } from '@/theme';
 
 /** The "doc" tab: every uploaded document, newest first. */
 export default function DocsScreen() {
@@ -40,7 +41,6 @@ export default function DocsScreen() {
       await upload(subjects[0].id);
       return;
     }
-    // More than one subject, so ask which folder the file belongs in.
     Alert.alert(
       'Add to which subject?',
       undefined,
@@ -60,9 +60,7 @@ export default function DocsScreen() {
   async function upload(subjectId: number) {
     setBusy(true);
     try {
-      if (await pickDocumentForSubject(db, subjectId)) {
-        refresh();
-      }
+      if (await pickDocumentForSubject(db, subjectId)) refresh();
     } catch (error) {
       Alert.alert(
         'Could not add that file',
@@ -75,8 +73,8 @@ export default function DocsScreen() {
 
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'left', 'right']}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <ScreenTitle title="Documents" subtitle="Files kept on this device" />
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScreenTitle title={'Save now.\nRevise later.'} />
 
         {subjects.length > 0 ? (
           <Button
@@ -84,25 +82,24 @@ export default function DocsScreen() {
             icon="cloud-upload-outline"
             onPress={onUpload}
             disabled={busy}
-            variant={documents.length === 0 ? 'primary' : 'quiet'}
           />
         ) : null}
 
         {loading && documents.length === 0 ? <Loading /> : null}
 
-        <View style={styles.list}>
-          {documents.map((doc) => (
-            <DocRow
-              key={doc.id}
-              doc={doc}
-              onOpen={() => router.push(`/document/${doc.id}`)}
-              onDelete={async () => {
-                await deleteDocument(db, doc.id);
-                refresh();
-              }}
-            />
-          ))}
-        </View>
+        {documents.length > 0 ? <SectionHeader>All documents</SectionHeader> : null}
+
+        {documents.map((doc) => (
+          <DocRow
+            key={doc.id}
+            doc={doc}
+            onOpen={() => router.push(`/document/${doc.id}`)}
+            onDelete={async () => {
+              await deleteDocument(db, doc.id);
+              refresh();
+            }}
+          />
+        ))}
 
         {!loading && documents.length === 0 ? (
           <EmptyState
@@ -138,10 +135,10 @@ function DocRow({
   ].filter(Boolean);
 
   return (
-    <Card accent={doc.subject_color} onPress={onOpen}>
+    <Card onPress={onOpen}>
       <View style={styles.row}>
-        <View style={[styles.badge, { backgroundColor: `${doc.subject_color}1A` }]}>
-          <Text style={[styles.badgeText, { color: doc.subject_color }]}>
+        <View style={[styles.badge, { backgroundColor: doc.subject_color }]}>
+          <Text style={[styles.badgeText, { color: onSubject(doc.subject_color) }]}>
             {extensionOf(doc.name)}
           </Text>
         </View>
@@ -154,6 +151,7 @@ function DocRow({
         <IconButton
           icon="trash-outline"
           label={`Delete ${doc.name}`}
+          color={colors.faint}
           onPress={onDelete}
         />
       </View>
@@ -170,17 +168,16 @@ function extensionOf(name: string): string {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.canvas },
   content: { padding: spacing.lg, paddingBottom: spacing.xxl },
-  list: { marginTop: spacing.lg },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  rowBody: { flex: 1 },
-  rowTitle: { fontSize: 15, fontWeight: '600', color: colors.ink },
-  rowMeta: { fontSize: 12, color: colors.muted, marginTop: 2 },
+  rowBody: { flex: 1, minWidth: 0 },
+  rowTitle: { fontSize: 15, fontWeight: '700', color: colors.ink, letterSpacing: -0.2 },
+  rowMeta: { fontSize: 12, color: colors.muted, marginTop: 2, fontWeight: '500' },
   badge: {
-    width: 44,
-    height: 44,
+    width: 46,
+    height: 46,
     borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  badgeText: { fontSize: 11, fontWeight: '700' },
+  badgeText: { fontSize: 11, fontWeight: '800' },
 });

@@ -6,18 +6,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Button,
   Card,
+  Chip,
   EmptyState,
   Field,
   IconButton,
   Loading,
   ScreenTitle,
   SectionHeader,
+  StatTile,
 } from '@/components/ui';
 import { listSubjects, type SubjectSummary } from '@/db/subjects';
 import { createTodo, deleteTodo, listTodos, toggleTodo } from '@/db/todos';
 import type { Todo, WithSubject } from '@/db/types';
 import { useQuery } from '@/lib/useQuery';
-import { colors, radius, spacing } from '@/theme';
+import { colors, radius, shadow, spacing } from '@/theme';
 
 /** The "todo" tab: tasks from every subject in one list. */
 export default function TodoScreen() {
@@ -47,8 +49,15 @@ export default function TodoScreen() {
 
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'left', 'right']}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <ScreenTitle title="To do" subtitle="Across all subjects" />
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScreenTitle title={'Everything\non your plate.'} />
+
+        {todos.length > 0 ? (
+          <View style={styles.tiles}>
+            <StatTile value={String(open.length)} label="Still to do" tone="lime" />
+            <StatTile value={String(done.length)} label="Done" tone="lavender" />
+          </View>
+        ) : null}
 
         {subjects.length > 0 ? (
           <View style={styles.composer}>
@@ -60,25 +69,15 @@ export default function TodoScreen() {
               onSubmitEditing={onAdd}
             />
             <View style={styles.chips}>
-              {subjects.map((s) => {
-                const selected = subjectId === s.id;
-                return (
-                  <Text
-                    key={s.id}
-                    accessibilityRole="button"
-                    onPress={() => setSubjectId(s.id)}
-                    style={[
-                      styles.chip,
-                      selected
-                        ? { backgroundColor: s.color, color: colors.surface }
-                        : null,
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {s.name}
-                  </Text>
-                );
-              })}
+              {subjects.map((s) => (
+                <Chip
+                  key={s.id}
+                  label={s.name}
+                  color={s.color}
+                  selected={subjectId === s.id}
+                  onPress={() => setSubjectId(s.id)}
+                />
+              ))}
             </View>
             <Button label="Add task" icon="add" onPress={onAdd} disabled={!title.trim()} />
           </View>
@@ -159,17 +158,16 @@ function TodoRow({
           icon={complete ? 'checkbox' : 'square-outline'}
           label={`${complete ? 'Reopen' : 'Complete'} ${todo.title}`}
           onPress={onToggle}
-          color={complete ? colors.accent : colors.muted}
+          color={complete ? colors.blue : colors.ink}
         />
         <View style={styles.rowBody}>
-          <Text style={[styles.rowTitle, complete ? styles.struck : null]}>
-            {todo.title}
-          </Text>
+          <Text style={[styles.rowTitle, complete ? styles.struck : null]}>{todo.title}</Text>
           <Text style={styles.rowMeta}>{todo.subject_name}</Text>
         </View>
         <IconButton
           icon="trash-outline"
           label={`Delete ${todo.title}`}
+          color={colors.faint}
           onPress={onDelete}
         />
       </View>
@@ -180,30 +178,18 @@ function TodoRow({
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.canvas },
   content: { padding: spacing.lg, paddingBottom: spacing.xxl },
+  tiles: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
   composer: {
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: radius.md,
-    padding: spacing.md,
-    gap: spacing.sm,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    gap: spacing.md,
+    ...shadow,
   },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
-  chip: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: colors.canvas,
-    fontSize: 13,
-    color: colors.muted,
-    overflow: 'hidden',
-    maxWidth: 160,
-  },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  rowBody: { flex: 1 },
-  rowTitle: { fontSize: 15, fontWeight: '500', color: colors.ink },
-  rowMeta: { fontSize: 12, color: colors.muted, marginTop: 2 },
+  rowBody: { flex: 1, minWidth: 0 },
+  rowTitle: { fontSize: 15, fontWeight: '600', color: colors.ink },
+  rowMeta: { fontSize: 12, color: colors.muted, marginTop: 2, fontWeight: '500' },
   struck: { textDecorationLine: 'line-through', color: colors.faint },
 });

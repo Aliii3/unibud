@@ -8,6 +8,25 @@ Built from the handwritten concept notes — see
 [`docs/unibud-concept-spec.pdf`](docs/unibud-concept-spec.pdf) for the written
 specification, including the open questions the notes left unanswered.
 
+## Design
+
+Palette and layout language come from the supplied references:
+
+| Token | Value | Used for |
+| --- | --- | --- |
+| `blue` | `#3760F9` | hero panels, active states |
+| `ink` | `#17161B` | text, primary buttons |
+| `lime` | `#D2FC59` | action circles, active tab, highlight tiles |
+| `lavender` | `#DAD9FB` | secondary tiles, empty-state marks |
+
+Everything lives in `src/theme.ts` (colours, spacing, radii, one shared
+shadow) and `src/components/ui.tsx` (the primitives every screen composes
+from). Change a token there and it propagates.
+
+The look: big tight two-line headlines, subjects drawn as folder cards with a
+coloured tab, black pill buttons carrying a lime action circle, and one soft
+elevation rather than outlines.
+
 ## Stack
 
 - **Expo SDK 57** / React Native 0.86, TypeScript

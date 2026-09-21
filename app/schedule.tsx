@@ -1,10 +1,11 @@
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import {
   Button,
   Card,
+  Chip,
   EmptyState,
   Field,
   IconButton,
@@ -16,7 +17,7 @@ import { createSlot, deleteSlot, listSlotsForWeek } from '@/db/schedule';
 import { listSubjects, type SubjectSummary } from '@/db/subjects';
 import { clockToMinutes, minutesToClock, WEEKDAYS, WEEKDAYS_SHORT } from '@/lib/format';
 import { useQuery } from '@/lib/useQuery';
-import { colors, radius, spacing } from '@/theme';
+import { colors, radius, shadow, spacing } from '@/theme';
 
 /** "add your subjects and schedule" — the weekly timetable. */
 export default function ScheduleScreen() {
@@ -77,7 +78,7 @@ export default function ScheduleScreen() {
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
-      <ScreenTitle title="Schedule" subtitle="Your week, class by class" />
+      <ScreenTitle title={'Your week,\nclass by class.'} />
 
       <View style={styles.form}>
         <View style={styles.chips}>
@@ -178,65 +179,25 @@ export default function ScheduleScreen() {
   );
 }
 
-function Chip({
-  label,
-  selected,
-  onPress,
-  color = colors.accent,
-}: {
-  label: string;
-  selected: boolean;
-  onPress: () => void;
-  color?: string;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityState={{ selected }}
-      onPress={onPress}
-      style={[styles.chip, selected ? { backgroundColor: color, borderColor: color } : null]}
-    >
-      <Text
-        style={[styles.chipLabel, selected ? styles.chipLabelSelected : null]}
-        numberOfLines={1}
-      >
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.canvas },
   content: { padding: spacing.lg, paddingBottom: spacing.xxl },
   form: {
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: radius.md,
-    padding: spacing.md,
-    gap: spacing.sm,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    gap: spacing.md,
+    ...shadow,
   },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
-  chip: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: colors.canvas,
-    maxWidth: 160,
-  },
-  chipLabel: { fontSize: 13, color: colors.muted },
-  chipLabelSelected: { color: colors.surface, fontWeight: '600' },
   times: { flexDirection: 'row', gap: spacing.sm },
   // minWidth lets the two inputs actually share the row instead of the
   // second one overflowing its card.
   time: { flex: 1, minWidth: 0 },
-  hint: { fontSize: 12, color: colors.warning },
+  hint: { fontSize: 12, color: colors.warning, fontWeight: '600' },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  rowBody: { flex: 1 },
-  rowTitle: { fontSize: 15, fontWeight: '600', color: colors.ink },
-  rowMeta: { fontSize: 12, color: colors.muted, marginTop: 2 },
-  time_: { fontSize: 13, fontWeight: '700', color: colors.faint, width: 46 },
+  rowBody: { flex: 1, minWidth: 0 },
+  rowTitle: { fontSize: 15, fontWeight: '700', color: colors.ink, letterSpacing: -0.2 },
+  rowMeta: { fontSize: 12, color: colors.muted, marginTop: 2, fontWeight: '500' },
+  time_: { fontSize: 13, fontWeight: '800', color: colors.ink, width: 48 },
 });

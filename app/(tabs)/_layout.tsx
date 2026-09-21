@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import type { ColorValue } from 'react-native';
 
-import { colors } from '@/theme';
+import { colors, radius, spacing } from '@/theme';
 
 /**
  * Home is last in the bar, as drawn on page 3 of the notes, but it is still
@@ -12,53 +13,82 @@ export const unstable_settings = {
   initialRouteName: 'index',
 };
 
-/** The four tabs sketched on page 3 of the notes: doc, todo, deadline, home. */
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.accent,
+        tabBarActiveTintColor: colors.ink,
         tabBarInactiveTintColor: colors.faint,
-        tabBarStyle: { borderTopColor: colors.line },
+        tabBarShowLabel: true,
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.line,
+          paddingTop: spacing.xs,
+          height: 84,
+        },
+        tabBarItemStyle: { paddingVertical: spacing.xs },
       }}
     >
       <Tabs.Screen
         name="docs"
         options={{
           title: 'Doc',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="document-text-outline" color={color} size={size} />
-          ),
+          tabBarIcon: (props) => <TabIcon {...props} name="document-text" />,
         }}
       />
       <Tabs.Screen
         name="todo"
         options={{
           title: 'Todo',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="checkbox-outline" color={color} size={size} />
-          ),
+          tabBarIcon: (props) => <TabIcon {...props} name="checkbox" />,
         }}
       />
       <Tabs.Screen
         name="deadlines"
         options={{
           title: 'Deadline',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="alarm-outline" color={color} size={size} />
-          ),
+          tabBarIcon: (props) => <TabIcon {...props} name="alarm" />,
         }}
       />
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid-outline" color={color} size={size} />
-          ),
+          tabBarIcon: (props) => <TabIcon {...props} name="grid" />,
         }}
       />
     </Tabs>
+  );
+}
+
+/** The active tab gets a lime pill behind its icon. */
+function TabIcon({
+  name,
+  color,
+  focused,
+}: {
+  name: keyof typeof Ionicons.glyphMap;
+  color: ColorValue;
+  focused: boolean;
+}) {
+  return (
+    <Ionicons
+      name={focused ? name : (`${name}-outline` as keyof typeof Ionicons.glyphMap)}
+      color={color as string}
+      size={22}
+      style={
+        focused
+          ? {
+              backgroundColor: colors.lime,
+              borderRadius: radius.pill,
+              paddingHorizontal: spacing.lg,
+              paddingVertical: spacing.xs,
+              overflow: 'hidden',
+            }
+          : { paddingHorizontal: spacing.lg, paddingVertical: spacing.xs }
+      }
+    />
   );
 }

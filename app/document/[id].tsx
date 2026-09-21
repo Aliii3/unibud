@@ -21,7 +21,7 @@ import {
 } from '@/db/documents';
 import { formatBytes } from '@/lib/files';
 import { useQuery } from '@/lib/useQuery';
-import { colors, spacing } from '@/theme';
+import { colors, radius, spacing } from '@/theme';
 
 /**
  * "allows you to divide the chapters and content".
@@ -130,10 +130,16 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   index: {
     fontSize: 12,
-    fontWeight: '700',
-    color: colors.faint,
-    width: 18,
+    fontWeight: '800',
+    color: colors.ink,
+    backgroundColor: colors.lime,
+    borderRadius: radius.pill,
+    width: 24,
+    height: 24,
+    lineHeight: 24,
+    textAlign: 'center',
+    overflow: 'hidden',
   },
-  rowTitle: { flex: 1, fontSize: 15, color: colors.ink },
-  composer: { gap: spacing.sm, marginTop: spacing.lg },
+  rowTitle: { flex: 1, minWidth: 0, fontSize: 15, color: colors.ink, fontWeight: '600' },
+  composer: { gap: spacing.md, marginTop: spacing.lg },
 });

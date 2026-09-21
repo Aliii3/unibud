@@ -96,8 +96,8 @@ export default function SettingsScreen() {
       keyboardShouldPersistTaps="handled"
     >
       <ScreenTitle
-        title="Daily check-in"
-        subtitle="Unibud asks once a day what is due"
+        title={'Ask me daily.\nStay ahead.'}
+        subtitle="Unibud checks in once a day"
       />
 
       <Card>
@@ -111,7 +111,7 @@ export default function SettingsScreen() {
           <Switch
             value={enabled}
             onValueChange={setEnabled}
-            trackColor={{ true: colors.accent, false: colors.line }}
+            trackColor={{ true: colors.blue, false: colors.line }}
           />
         </View>
       </Card>
@@ -158,15 +158,17 @@ const styles = StyleSheet.create({
   rowBody: { flex: 1 },
   rowTitle: { fontSize: 15, fontWeight: '600', color: colors.ink },
   rowMeta: { fontSize: 12, color: colors.muted, marginTop: 2 },
-  body: { fontSize: 14, color: colors.muted, marginBottom: spacing.sm },
+  body: { fontSize: 14, color: colors.muted, marginBottom: spacing.sm, lineHeight: 20 },
   hint: { fontSize: 12, color: colors.warning, marginTop: spacing.xs },
   save: { marginTop: spacing.xl },
   status: {
     marginTop: spacing.md,
     fontSize: 13,
+    fontWeight: '600',
     color: colors.ink,
-    backgroundColor: colors.accentSoft,
-    borderRadius: radius.sm,
-    padding: spacing.md,
+    backgroundColor: colors.lavender,
+    borderRadius: radius.md,
+    padding: spacing.lg,
+    overflow: 'hidden',
   },
 });

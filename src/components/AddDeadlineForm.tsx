@@ -1,6 +1,6 @@
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { createDeadline, setDeadlineReminder } from '@/db/deadlines';
 import { DEFAULTS, getNumberSetting, KEYS } from '@/db/settings';
@@ -8,9 +8,9 @@ import { listSubjects, type SubjectSummary } from '@/db/subjects';
 import type { DeadlineKind } from '@/db/types';
 import { parseDueDate } from '@/lib/format';
 import { scheduleDeadlineReminder } from '@/lib/notifications';
-import { colors, radius, spacing } from '@/theme';
+import { colors, radius, shadow, spacing } from '@/theme';
 
-import { Button, Field } from './ui';
+import { Button, Chip, Field } from './ui';
 
 const KINDS: DeadlineKind[] = ['assignment', 'quiz', 'exam'];
 
@@ -45,8 +45,7 @@ export function AddDeadlineForm({
 
   const dueAt = parseDueDate(due);
   const dateLooksWrong = due.trim().length > 0 && dueAt == null;
-  const canSave =
-    !saving && title.trim().length > 0 && chosen != null && dueAt != null;
+  const canSave = !saving && title.trim().length > 0 && chosen != null && dueAt != null;
 
   async function onSave() {
     if (chosen == null || dueAt == null) return;
@@ -66,17 +65,14 @@ export function AddDeadlineForm({
         KEYS.reminderLeadHours,
         DEFAULTS.reminderLeadHours
       );
-      const subjectName =
-        subjects.find((s) => s.id === chosen)?.name ?? 'Unibud';
+      const subjectName = subjects.find((s) => s.id === chosen)?.name ?? 'Unibud';
       const reminderId = await scheduleDeadlineReminder(
         title.trim(),
         subjectName,
         dueAt,
         lead
       );
-      if (reminderId) {
-        await setDeadlineReminder(db, id, reminderId);
-      }
+      if (reminderId) await setDeadlineReminder(db, id, reminderId);
 
       setTitle('');
       setDue('');
@@ -88,12 +84,9 @@ export function AddDeadlineForm({
 
   return (
     <View style={styles.form}>
-      <Field
-        autoFocus
-        value={title}
-        onChangeText={setTitle}
-        placeholder="What is due?"
-      />
+      <Text style={styles.heading}>New deadline</Text>
+
+      <Field autoFocus value={title} onChangeText={setTitle} placeholder="What is due?" />
 
       <View style={styles.row}>
         {KINDS.map((k) => (
@@ -102,6 +95,7 @@ export function AddDeadlineForm({
             label={k}
             selected={kind === k}
             onPress={() => setKind(k)}
+            color={colors.ink}
           />
         ))}
       </View>
@@ -145,60 +139,18 @@ export function AddDeadlineForm({
   );
 }
 
-function Chip({
-  label,
-  selected,
-  onPress,
-  color = colors.accent,
-}: {
-  label: string;
-  selected: boolean;
-  onPress: () => void;
-  color?: string;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityState={{ selected }}
-      onPress={onPress}
-      style={[
-        styles.chip,
-        selected ? { backgroundColor: color, borderColor: color } : null,
-      ]}
-    >
-      <Text
-        style={[styles.chipLabel, selected ? styles.chipLabelSelected : null]}
-        numberOfLines={1}
-      >
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   form: {
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: radius.md,
-    padding: spacing.md,
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    gap: spacing.md,
+    marginBottom: spacing.md,
+    ...shadow,
   },
+  heading: { fontSize: 17, fontWeight: '800', color: colors.ink, letterSpacing: -0.3 },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
-  chip: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: colors.canvas,
-    maxWidth: 160,
-  },
-  chipLabel: { fontSize: 13, color: colors.muted, textTransform: 'capitalize' },
-  chipLabelSelected: { color: colors.surface, fontWeight: '600' },
-  hint: { fontSize: 12, color: colors.warning },
+  hint: { fontSize: 12, color: colors.warning, fontWeight: '600' },
   actions: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs },
-  action: { flex: 1 },
+  action: { flex: 1, minWidth: 0 },
 });
