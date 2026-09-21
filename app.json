@@ -14,7 +14,7 @@
     "android": {
       "package": "com.unibud.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4EA",
+        "backgroundColor": "#3760F9",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -40,11 +40,11 @@
         {
           "image": "./assets/splash-icon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#FFFFFF",
+          "backgroundColor": "#F7F3EA",
           "dark": {
-            "backgroundColor": "#111111"
+            "backgroundColor": "#17161B"
           },
-          "imageWidth": 160
+          "imageWidth": 200
         }
       ]
     ],

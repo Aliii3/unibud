@@ -8,6 +8,31 @@ Built from the handwritten concept notes — see
 [`docs/unibud-concept-spec.pdf`](docs/unibud-concept-spec.pdf) for the written
 specification, including the open questions the notes left unanswered.
 
+## Brand
+
+![Unibud](docs/unibud-logo.png)
+
+The mark is a folder, because "a subject is a folder" is the idea the app is
+built on, drawn in the interface's own language: flat colour, heavy black
+outline, lime on blue.
+
+Every icon asset is generated from one definition — run
+`python3 scripts/build_icons.py` after changing it, and do not hand-edit the
+PNGs. What it produces and why:
+
+| Asset | Notes |
+| --- | --- |
+| `assets/icon.png` | 1024, **opaque** — App Store review rejects an icon with an alpha channel |
+| `assets/android-icon-foreground.png` | 1024, alpha, mark kept inside the middle 66% so launcher crops cannot clip it |
+| `assets/android-icon-background.png` | 1024, opaque |
+| `assets/android-icon-monochrome.png` | 1024, silhouette for themed icons, tick punched out so it survives recolouring |
+| `assets/splash-icon.png` | 1024, alpha |
+| `assets/favicon.png` | 196 |
+| `docs/unibud-logo.png` | wordmark for a listing or README |
+
+The icon carries no rounded corners of its own; iOS and Android apply their
+own masks.
+
 ## Design
 
 Palette and layout language come from the supplied references:
