@@ -10,7 +10,7 @@ import { parseDueDate } from '@/lib/format';
 import { scheduleDeadlineReminder } from '@/lib/notifications';
 import { border, colors, radius, spacing } from '@/theme';
 
-import { Button, Chip, Field } from './ui';
+import { Button, Chip, Field } from '@/ui';
 
 const KINDS: DeadlineKind[] = ['assignment', 'quiz', 'exam'];
 

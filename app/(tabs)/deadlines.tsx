@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AddDeadlineForm } from '@/components/AddDeadlineForm';
+import { AddDeadlineForm } from '@/features/deadlines/AddDeadlineForm';
 import {
   Button,
   Card,
@@ -15,7 +15,7 @@ import {
   ScreenTitle,
   SectionHeader,
   StatTile,
-} from '@/components/ui';
+} from '@/ui';
 import { deleteDeadline, listOpenDeadlines, setDeadlineDone } from '@/db/deadlines';
 import type { Deadline, WithSubject } from '@/db/types';
 import { formatDueDate, isOverdue, relativeDue } from '@/lib/format';

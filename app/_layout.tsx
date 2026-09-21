@@ -6,7 +6,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { Button } from '@/components/ui';
+import { Button } from '@/ui';
 import { DATABASE_NAME, migrate } from '@/db';
 import { colors, spacing } from '@/theme';
 

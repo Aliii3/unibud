@@ -12,7 +12,7 @@ import {
   Loading,
   ScreenTitle,
   SectionHeader,
-} from '@/components/ui';
+} from '@/ui';
 import {
   createChapter,
   deleteChapter,

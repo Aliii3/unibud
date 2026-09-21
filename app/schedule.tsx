@@ -12,7 +12,7 @@ import {
   Loading,
   ScreenTitle,
   SectionHeader,
-} from '@/components/ui';
+} from '@/ui';
 import { createSlot, deleteSlot, listSlotsForWeek } from '@/db/schedule';
 import { listSubjects, type SubjectSummary } from '@/db/subjects';
 import { clockToMinutes, minutesToClock, WEEKDAYS, WEEKDAYS_SHORT } from '@/lib/format';

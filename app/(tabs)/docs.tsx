@@ -13,7 +13,7 @@ import {
   Loading,
   ScreenTitle,
   SectionHeader,
-} from '@/components/ui';
+} from '@/ui';
 import { deleteDocument, listDocuments, type DocSummary } from '@/db/documents';
 import { listSubjects, type SubjectSummary } from '@/db/subjects';
 import type { WithSubject } from '@/db/types';

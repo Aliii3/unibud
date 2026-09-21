@@ -14,7 +14,7 @@ import {
   ScreenTitle,
   SectionHeader,
   StatTile,
-} from '@/components/ui';
+} from '@/ui';
 import { listSubjects, type SubjectSummary } from '@/db/subjects';
 import { createTodo, deleteTodo, listTodos, toggleTodo } from '@/db/todos';
 import type { Todo, WithSubject } from '@/db/types';

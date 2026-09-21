@@ -2,7 +2,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
-import { Button, Card, Field, ScreenTitle, SectionHeader } from '@/components/ui';
+import { Button, Card, Field, ScreenTitle, SectionHeader } from '@/ui';
 import {
   DEFAULTS,
   getBoolSetting,

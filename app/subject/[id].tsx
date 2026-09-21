@@ -4,7 +4,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { AddDeadlineForm } from '@/components/AddDeadlineForm';
+import { AddDeadlineForm } from '@/features/deadlines/AddDeadlineForm';
 import {
   Button,
   Card,
@@ -14,7 +14,7 @@ import {
   IconTile,
   Loading,
   ScreenTitle,
-} from '@/components/ui';
+} from '@/ui';
 import { listDeadlinesForSubject, setDeadlineDone } from '@/db/deadlines';
 import { deleteDocument, listDocumentsForSubject } from '@/db/documents';
 import { listSlotsForSubject } from '@/db/schedule';

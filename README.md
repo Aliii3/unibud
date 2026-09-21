@@ -77,11 +77,25 @@ app/                      screens (expo-router)
   document/[id].tsx       divide a document into chapters
   schedule.tsx            weekly timetable
   settings.tsx            daily check-in time, reminder lead time
-src/db/                   schema, migrations, one module per table
-src/lib/                  notifications, file storage, formatting, useQuery
-src/components/           shared UI
+src/
+  ui/                     the shared kit, imported as '@/ui'
+    Surface.tsx           the outlined-face-on-offset-shadow primitive
+    layout.tsx            ScreenTitle, SectionHeader, ScreenHeader
+    controls.tsx          Button, Field, Chip, AddRow, IconButton
+    display.tsx           Card, HeroStat, StatTile, IconTile, Pill, MetaStat,
+                          LegendDot, EmptyState, Loading
+  features/               composites owned by one part of the app
+    subjects/FolderCard.tsx
+    deadlines/AddDeadlineForm.tsx
+  db/                     schema, migrations, one module per table
+  lib/                    notifications, file storage, formatting, useQuery
+  theme.ts                design tokens
 docs/                     concept spec + the script that generates it
 ```
+
+Screens import primitives from the `@/ui` barrel rather than reaching into
+its files, so the kit can be regrouped without touching them. Anything that
+knows about a specific table or screen belongs in `features/`, not `ui/`.
 
 ### Data
 
