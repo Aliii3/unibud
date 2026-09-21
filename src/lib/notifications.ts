@@ -6,15 +6,24 @@ export const ANDROID_CHANNEL_ID = 'unibud-reminders';
 /**
  * Foreground presentation. Without this a notification that fires while the
  * app is open is delivered silently and the daily prompt is easy to miss.
+ *
+ * Guarded because this runs at import time, and expo-notifications is not
+ * supported in Expo Go on Android from SDK 53. An unguarded throw here takes
+ * the whole screen tree down at startup, which is a poor trade for a
+ * presentation preference.
  */
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
+try {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
+} catch (error) {
+  console.warn('Unibud: could not set the notification handler', error);
+}
 
 export async function configureAndroidChannel(): Promise<void> {
   if (Platform.OS !== 'android') return;
