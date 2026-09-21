@@ -230,7 +230,9 @@ const styles = StyleSheet.create({
   chipLabel: { fontSize: 13, color: colors.muted },
   chipLabelSelected: { color: colors.surface, fontWeight: '600' },
   times: { flexDirection: 'row', gap: spacing.sm },
-  time: { flex: 1 },
+  // minWidth lets the two inputs actually share the row instead of the
+  // second one overflowing its card.
+  time: { flex: 1, minWidth: 0 },
   hint: { fontSize: 12, color: colors.warning },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   rowBody: { flex: 1 },

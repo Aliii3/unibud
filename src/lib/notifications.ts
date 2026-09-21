@@ -56,20 +56,25 @@ export async function scheduleDailyPrompt(
   minute: number
 ): Promise<string | null> {
   if (!(await ensurePermissions())) return null;
-  await configureAndroidChannel();
-  return Notifications.scheduleNotificationAsync({
-    content: {
-      title: 'Anything due?',
-      body: 'Add today’s deadlines and assignments while they are fresh.',
-      data: { kind: 'daily-prompt' },
-    },
-    trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.DAILY,
-      hour,
-      minute,
-      channelId: ANDROID_CHANNEL_ID,
-    },
-  });
+  try {
+    await configureAndroidChannel();
+    return await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Anything due?',
+        body: 'Add today’s deadlines and assignments while they are fresh.',
+        data: { kind: 'daily-prompt' },
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DAILY,
+        hour,
+        minute,
+        channelId: ANDROID_CHANNEL_ID,
+      },
+    });
+  } catch {
+    // The caller reports that the prompt could not be scheduled.
+    return null;
+  }
 }
 
 /**
@@ -86,17 +91,23 @@ export async function scheduleDeadlineReminder(
   const fireAt = dueAt - leadHours * 60 * 60 * 1000;
   if (fireAt <= Date.now()) return null;
   if (!(await ensurePermissions())) return null;
-  await configureAndroidChannel();
-  return Notifications.scheduleNotificationAsync({
-    content: {
-      title: `${subjectName}: ${title}`,
-      body: `Due in ${leadHours} hours.`,
-      data: { kind: 'deadline-reminder' },
-    },
-    trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.DATE,
-      date: new Date(fireAt),
-      channelId: ANDROID_CHANNEL_ID,
-    },
-  });
+  try {
+    await configureAndroidChannel();
+    return await Notifications.scheduleNotificationAsync({
+      content: {
+        title: `${subjectName}: ${title}`,
+        body: `Due in ${leadHours} hours.`,
+        data: { kind: 'deadline-reminder' },
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: new Date(fireAt),
+        channelId: ANDROID_CHANNEL_ID,
+      },
+    });
+  } catch {
+    // Saving the deadline matters more than the reminder; the deadline is
+    // already stored by the time this runs, so it simply goes without one.
+    return null;
+  }
 }

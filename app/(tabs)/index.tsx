@@ -29,6 +29,11 @@ export default function HomeScreen() {
   const [adding, setAdding] = useState(false);
 
   const subjects = data ?? [];
+  // FlatList gives a lone item on the final row the full width, which makes an
+  // odd number of subjects render one double-width card. A spacer keeps the
+  // grid square.
+  const grid: (SubjectSummary | null)[] =
+    subjects.length % 2 === 1 ? [...subjects, null] : subjects;
 
   async function onAdd() {
     const trimmed = name.trim();
@@ -42,8 +47,8 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'left', 'right']}>
       <FlatList
-        data={subjects}
-        keyExtractor={(item) => String(item.id)}
+        data={grid}
+        keyExtractor={(item, index) => (item ? String(item.id) : `spacer-${index}`)}
         numColumns={2}
         columnWrapperStyle={subjects.length > 0 ? styles.column : undefined}
         contentContainerStyle={styles.content}
@@ -80,12 +85,16 @@ export default function HomeScreen() {
             ) : null}
           </View>
         }
-        renderItem={({ item }) => (
-          <SubjectCard
-            subject={item}
-            onPress={() => router.push(`/subject/${item.id}`)}
-          />
-        )}
+        renderItem={({ item }) =>
+          item ? (
+            <SubjectCard
+              subject={item}
+              onPress={() => router.push(`/subject/${item.id}`)}
+            />
+          ) : (
+            <View style={styles.folder} />
+          )
+        }
         ListEmptyComponent={
           loading ? (
             <Loading />

@@ -29,8 +29,14 @@ build to test the daily check-in there.
 ```bash
 npm run typecheck    # tsc --noEmit
 npx expo-doctor      # project health
+npm run web          # open it in a browser, no simulator needed
 npm run spec         # regenerate docs/unibud-concept-spec.pdf
 ```
+
+`npm run web` is a convenience for eyeballing a layout quickly; iOS and
+Android are the real targets. Notifications do not fire on web, and
+`metro.config.js` exists only to make expo-sqlite's WebAssembly build work
+there.
 
 ## Layout
 
