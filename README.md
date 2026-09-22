@@ -136,9 +136,23 @@ must have run through `eas build` before `eas submit` has anything to send.
 
 | Page | Serves as |
 | --- | --- |
-| `docs/index.html` | the Support URL, and a plain landing page |
+| `docs/index.html` | the Marketing URL — the product page |
+| `docs/support.html` | the Support URL |
 | `docs/privacy.html` | the Privacy policy URL |
 | `docs/privacy.md` | the same policy as readable source |
+| `docs/shots/` | app screenshots the product page uses |
+
+The product page's screenshots come from the same capture script the store
+listing uses, resized for the web:
+
+```
+npm run web                       # in one terminal
+SHOT_DIR=/tmp/shots node scripts/capture_screens.mjs
+```
+
+then resize into `docs/shots/`. They are real screens, so they have to be
+recaptured when the app's look changes, or the page starts advertising an
+app that no longer exists.
 
 Both HTML pages are self-contained — no stylesheet, no image files, the
 logo is inline SVG — so hosting them is a matter of putting two files

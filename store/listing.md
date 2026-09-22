@@ -86,7 +86,8 @@ Everything stays on your device. No account, no sync, no tracking.
 - **Age rating** — 4+. No user content, no web views, no ads.
 - **Privacy** — "Data Not Collected". Everything is device-local SQLite and
   the app makes no network requests, so every question answers the same way.
-- **Support URL** — `https://aliii3.github.io/unibud/`
+- **Marketing URL** — `https://aliii3.github.io/unibud/`
+- **Support URL** — `https://aliii3.github.io/unibud/support.html`
 - **Privacy policy URL** — `https://aliii3.github.io/unibud/privacy.html`
 
   Settings → Pages → *Deploy from a branch* → `main`, folder `/docs`.

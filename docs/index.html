@@ -4,78 +4,358 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Unibud — Save now. Find anytime.</title>
-<meta name="description" content="A study planner that keeps your coursework on your phone, and nowhere else.">
+<meta name="description" content="A study planner that keeps your coursework the way you think about it: one folder per subject. No account, no sync, nothing leaves your phone.">
+<meta name="theme-color" content="#3760F9">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%233760F9'/><rect x='19' y='33' width='62' height='45' rx='7' fill='%23D2FC59' stroke='%2317161B' stroke-width='4'/><path d='M40 57l9 9 17-19' fill='none' stroke='%2317161B' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<meta property="og:title" content="Unibud — Save now. Find anytime.">
+<meta property="og:description" content="One folder per subject, with the deadlines, tasks and notes inside it. Nothing leaves your phone.">
+<meta property="og:type" content="website">
 <style>
-  :root{--blue:#3760F9;--lime:#D2FC59;--ink:#17161B;--canvas:#F7F3EA;--surface:#FFFDF8;--muted:#6B6862}
+  :root{
+    --blue:#3760F9; --blue-deep:#2438B8; --lime:#D2FC59; --ink:#17161B;
+    --canvas:#F7F3EA; --surface:#FFFDF8; --muted:#6B6862; --lavender:#DAD9FB;
+    --pink:#FF4D86; --shadow:#17161B; --line:#17161B;
+  }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--canvas);color:var(--ink);
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--canvas); color:var(--ink);
     font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-    -webkit-font-smoothing:antialiased}
-  .wrap{max-width:660px;margin:0 auto;padding:64px 20px 80px}
-  .mark{width:84px;height:84px}
-  .mark svg{display:block;width:100%;height:100%;border-radius:18px;border:2px solid var(--ink)}
-  h1{font-size:clamp(34px,8vw,52px);line-height:1.02;letter-spacing:-1.8px;font-weight:800;margin:28px 0 10px}
-  .lede{font-size:18px;color:var(--muted);font-weight:500;margin:0 0 34px;max-width:36em}
-  ul{margin:0 0 34px;padding:0;list-style:none}
-  li{padding:10px 0 10px 28px;position:relative;font-weight:500}
-  li::before{content:"";position:absolute;left:0;top:18px;width:12px;height:12px;
-    background:var(--lime);border:2px solid var(--ink);border-radius:4px}
-  .links{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:40px}
-  .btn{display:inline-block;padding:14px 22px;border:2px solid var(--ink);border-radius:14px;
-    background:var(--surface);color:var(--ink);text-decoration:none;font-weight:700;
-    box-shadow:4px 4px 0 var(--ink)}
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+
+  /* ---------- nav ---------- */
+  nav{border-bottom:2px solid var(--line);background:var(--canvas)}
+  .nav-in{display:flex;align-items:center;gap:14px;padding:14px 0}
+  .brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit;font-weight:800;font-size:19px;letter-spacing:-.4px}
+  .brand svg{display:block;width:38px;height:38px;border-radius:10px;border:2px solid var(--line)}
+  .nav-links{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .nav-links a{
+    text-decoration:none;color:var(--ink);font-weight:700;font-size:14px;
+    padding:8px 13px;border-radius:999px;border:2px solid transparent;
+  }
+  .nav-links a:hover{border-color:var(--line);background:var(--surface)}
+
+  /* ---------- shared ---------- */
+  .card{
+    background:var(--surface);border:2px solid var(--line);border-radius:20px;
+    box-shadow:6px 6px 0 var(--shadow);
+  }
+  h1,h2,h3{letter-spacing:-1px;line-height:1.05;margin:0}
+  h1{font-size:clamp(38px,7.4vw,68px);font-weight:800;letter-spacing:-2.4px}
+  h2{font-size:clamp(28px,4.6vw,40px);font-weight:800;letter-spacing:-1.4px}
+  h3{font-size:22px;font-weight:800;letter-spacing:-.7px}
+  .lede{font-size:clamp(17px,2.2vw,20px);color:var(--muted);font-weight:500}
+  .eyebrow{
+    display:inline-block;font-size:12px;font-weight:800;letter-spacing:1.4px;
+    text-transform:uppercase;padding:6px 12px;border:2px solid var(--line);
+    border-radius:999px;background:var(--lavender);color:var(--ink);margin-bottom:18px;
+  }
+  .btn{
+    display:inline-block;padding:15px 24px;border:2px solid var(--line);border-radius:14px;
+    background:var(--surface);color:var(--ink);text-decoration:none;font-weight:800;
+    box-shadow:5px 5px 0 var(--shadow);transition:transform .08s ease,box-shadow .08s ease;
+  }
+  .btn:hover{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--shadow)}
   .btn.primary{background:var(--lime)}
-  .note{background:var(--surface);border:2px solid var(--ink);border-radius:16px;padding:20px 22px;
-    box-shadow:5px 5px 0 var(--ink);font-weight:500}
-  footer{margin-top:40px;padding-top:20px;border-top:2px solid var(--ink);color:var(--muted);font-size:14px}
-  a{color:var(--blue)}
+  .shot{
+    display:block;width:100%;height:auto;border:2px solid var(--line);
+    border-radius:26px;box-shadow:7px 7px 0 var(--shadow);background:var(--canvas);
+  }
+
+  /* ---------- hero ---------- */
+  header{padding:clamp(48px,7vw,84px) 0 clamp(40px,6vw,64px)}
+  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,5vw,56px);align-items:center}
+  .hero p.lede{margin:20px 0 30px;max-width:30em}
+  .cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .soon{
+    display:inline-flex;align-items:center;gap:9px;padding:14px 20px;border-radius:14px;
+    border:2px dashed var(--line);font-weight:800;color:var(--muted);background:transparent;
+  }
+  .soon .dot{width:9px;height:9px;border-radius:999px;background:var(--pink);border:2px solid var(--line);flex:none}
+  .hero-art{position:relative;display:flex;justify-content:center}
+  .hero-art .shot{max-width:290px}
+  .blob{
+    position:absolute;inset:auto;width:260px;height:260px;border-radius:999px;
+    background:var(--lime);border:2px solid var(--line);z-index:-1;
+    top:8%;right:-6%;
+  }
+
+  /* ---------- trust strip ---------- */
+  .strip{background:var(--blue);border-top:2px solid var(--line);border-bottom:2px solid var(--line);color:#fff}
+  .strip-in{display:flex;flex-wrap:wrap;gap:10px 30px;padding:20px 0;font-weight:800;font-size:15px;justify-content:center}
+  .strip-in span{display:inline-flex;align-items:center;gap:9px}
+  .strip-in i{width:10px;height:10px;background:var(--lime);border:2px solid var(--line);border-radius:3px;flex:none;font-style:normal}
+
+  /* ---------- features ---------- */
+  section{padding:clamp(54px,8vw,92px) 0}
+  .section-head{max-width:34em;margin-bottom:clamp(34px,5vw,52px)}
+  .section-head p{margin:14px 0 0}
+  .feat{display:grid;grid-template-columns:1fr 1fr;gap:clamp(26px,5vw,60px);align-items:center;margin-bottom:clamp(48px,7vw,84px)}
+  .feat:last-child{margin-bottom:0}
+  .feat:nth-child(even) .feat-art{order:-1}
+  .feat-art{display:flex;justify-content:center}
+  .feat-art .shot{max-width:262px}
+  .feat h3{margin-bottom:12px}
+  .feat p{margin:0;color:var(--muted);font-weight:500;max-width:32em}
+  .tag{
+    display:inline-block;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--blue-deep);margin-bottom:9px;
+  }
+
+  /* ---------- privacy panel ---------- */
+  .panel{padding:clamp(30px,4.6vw,48px);background:var(--lime)}
+  .panel h2{max-width:16em}
+  .panel p{max-width:34em;font-weight:600;margin:16px 0 0}
+  .facts{list-style:none;margin:26px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px}
+  .facts li{
+    background:var(--surface);border:2px solid var(--line);border-radius:14px;
+    padding:14px 16px;font-weight:700;font-size:15px;
+  }
+  .facts b{display:block;font-size:13px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+
+  /* ---------- faq ---------- */
+  .faq{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .faq .card{padding:22px 24px}
+  .faq h3{font-size:18px;margin-bottom:9px}
+  .faq p{margin:0;color:var(--muted);font-weight:500;font-size:15px}
+
+  /* ---------- footer ---------- */
+  footer{border-top:2px solid var(--line);padding:34px 0 46px}
+  .foot-in{display:flex;flex-wrap:wrap;gap:16px 26px;align-items:center}
+  .foot-links{margin-left:auto;display:flex;gap:20px;flex-wrap:wrap}
+  footer a{color:var(--ink);font-weight:700;text-decoration:none;border-bottom:2px solid var(--lime)}
+  footer a:hover{border-bottom-color:var(--line)}
+  .fine{width:100%;color:var(--muted);font-size:14px;font-weight:500;margin:4px 0 0}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:820px){
+    .hero,.feat,.faq{grid-template-columns:1fr}
+    .feat:nth-child(even) .feat-art{order:0}
+    .hero-art{order:-1}
+    .hero-art .shot,.feat-art .shot{max-width:248px}
+    .blob{display:none}
+  }
+  @media (max-width:420px){
+    .nav-links a{padding:7px 10px;font-size:13px}
+    .btn,.soon{width:100%;text-align:center;justify-content:center}
+  }
+
+  /* ---------- dark ---------- */
   @media (prefers-color-scheme:dark){
-    :root{--canvas:#121118;--surface:#1D1C24;--ink:#F4F2EC;--muted:#A5A198}
-    .btn{box-shadow:4px 4px 0 #000}.btn.primary{color:#17161B}
-    .note{box-shadow:5px 5px 0 #000}a{color:#9DB2FF}
+    :root{
+      --canvas:#121118; --surface:#1D1C24; --ink:#F4F2EC; --muted:#A5A198;
+      --lavender:#3A3660; --shadow:#000; --line:#000;
+    }
+    nav,footer{border-color:#332F44}
+    .card,.shot,.facts li,.soon{border-color:#332F44}
+    .brand svg{border-color:#332F44}
+    .nav-links a:hover{border-color:#332F44}
+    .btn{border-color:#332F44;color:var(--ink)}
+    .btn.primary,.panel{color:#17161B}
+    .panel .facts li{color:#17161B;border-color:#17161B;background:#FFFDF8}
+    .panel .facts b{color:#6B6862}
+    .eyebrow{border-color:#332F44;color:#F4F2EC}
+    .strip{border-color:#000}
+    .tag{color:#9DB2FF}
+    footer a{color:var(--ink)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .btn{transition:none}
   }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="mark" aria-hidden="true">
-    <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
-      <rect width="1024" height="1024" fill="#3760F9"/>
-      <path d="M 226 279 a 44 44 0 0 1 44-44 h 191 a 44 44 0 0 1 44 44 v 187 h -279 z"
-            fill="#FFFDF8" stroke="#17161B" stroke-width="43" stroke-linejoin="round"/>
-      <rect x="195" y="333" width="635" height="457" rx="67"
-            fill="#D2FC59" stroke="#17161B" stroke-width="43" stroke-linejoin="round"/>
-      <path d="M 406 585 l 89 89 l 178 -191" fill="none" stroke="#17161B"
-            stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+
+<nav>
+  <div class="wrap nav-in">
+    <a class="brand" href="./">
+      <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="1024" height="1024" fill="#3760F9"/>
+        <path d="M 226 279 a 44 44 0 0 1 44-44 h 191 a 44 44 0 0 1 44 44 v 187 h -279 z"
+              fill="#FFFDF8" stroke="#17161B" stroke-width="43" stroke-linejoin="round"/>
+        <rect x="195" y="333" width="635" height="457" rx="67"
+              fill="#D2FC59" stroke="#17161B" stroke-width="43" stroke-linejoin="round"/>
+        <path d="M 406 585 l 89 89 l 178 -191" fill="none" stroke="#17161B"
+              stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Unibud
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#privacy">Privacy</a>
+      <a href="support.html">Support</a>
+    </div>
   </div>
+</nav>
 
-  <h1>Save now.<br>Find anytime.</h1>
-  <p class="lede">Unibud keeps your coursework the way you think about it — one
-  folder per subject, with the deadlines, tasks and notes for that subject
-  inside it. Then it asks you once a day what is due.</p>
-
-  <ul>
-    <li>Subjects as folders, with everything filed inside</li>
-    <li>Assignments, quizzes and exams, sorted by what comes first</li>
-    <li>Your weekly timetable beside everything else you owe</li>
-    <li>A daily check-in so nothing is remembered too late</li>
-    <li>No account, no sync, no tracking</li>
-  </ul>
-
-  <div class="links">
-    <a class="btn primary" href="privacy.html">Privacy policy</a>
-    <a class="btn" href="mailto:unibudapp@gmail.com">Support</a>
+<header>
+  <div class="wrap hero">
+    <div>
+      <span class="eyebrow">Study planner for iPhone</span>
+      <h1>Save now.<br>Find anytime.</h1>
+      <p class="lede">Unibud keeps your coursework the way you actually think
+      about it — one folder per subject, with the deadlines, tasks and notes
+      for that subject inside it. Then it does the part you forget: once a
+      day, it asks what is due.</p>
+      <div class="cta">
+        <span class="soon"><span class="dot"></span>Coming to the App Store</span>
+        <a class="btn primary" href="#features">See how it works</a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="blob" aria-hidden="true"></div>
+      <img class="shot" src="shots/01-home.webp" width="560" height="1214"
+           alt="The Unibud home screen: four subject folders with counts of what is due in each.">
+    </div>
   </div>
+</header>
 
-  <div class="note">
-    <strong>Support.</strong> Found a bug, or want something added? Email
-    <a href="mailto:unibudapp@gmail.com">unibudapp@gmail.com</a> and you will get a reply
-    from a person. There is no account to recover and no data to restore —
-    everything Unibud knows lives on your device.
+<div class="strip">
+  <div class="wrap strip-in">
+    <span><i></i>No account</span>
+    <span><i></i>No sync</span>
+    <span><i></i>No ads</span>
+    <span><i></i>No tracking</span>
+    <span><i></i>Works in plane mode</span>
   </div>
-
-  <footer>Unibud keeps your coursework on your phone, and nowhere else.</footer>
 </div>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Your term, filed where you will look for it.</h2>
+      <p class="lede">Five screens. Nothing to configure, no onboarding tour,
+      no streaks to keep alive.</p>
+    </div>
+
+    <div class="feat">
+      <div>
+        <span class="tag">Subjects</span>
+        <h3>A folder for every subject</h3>
+        <p>Add the subjects you are taking this term. Everything else —
+        documents, tasks, deadlines — lives in the folder it belongs to,
+        rather than in one endless list you stop reading by week three.
+        The home screen shows what each subject owes you at a glance.</p>
+      </div>
+      <div class="feat-art">
+        <img class="shot" src="shots/05-subject.webp" width="560" height="1214"
+             alt="A single subject in Unibud, showing its deadlines, tasks and attached documents.">
+      </div>
+    </div>
+
+    <div class="feat">
+      <div>
+        <span class="tag">Deadlines</span>
+        <h3>Nothing arrives as a surprise</h3>
+        <p>Add assignments, quizzes and exams with the date they are due.
+        Unibud sorts them by what comes first, flags anything overdue, and
+        reminds you a set number of hours ahead. Standalone reminders work
+        too, for the things that belong to no subject at all.</p>
+      </div>
+      <div class="feat-art">
+        <img class="shot" src="shots/02-deadlines.webp" width="560" height="1214"
+             alt="The deadlines screen, with overdue items flagged and the rest sorted by date.">
+      </div>
+    </div>
+
+    <div class="feat">
+      <div>
+        <span class="tag">Timetable</span>
+        <h3>Your week, class by class</h3>
+        <p>Put your timetable in once. Class times sit beside everything else
+        you owe, so the week is one picture instead of three apps and a
+        screenshot of a spreadsheet.</p>
+      </div>
+      <div class="feat-art">
+        <img class="shot" src="shots/03-schedule.webp" width="560" height="1214"
+             alt="The weekly timetable in Unibud, with class times listed under each day.">
+      </div>
+    </div>
+
+    <div class="feat">
+      <div>
+        <span class="tag">Tasks &amp; check-in</span>
+        <h3>One question a day</h3>
+        <p>Tasks know which subject they belong to, and show up both on that
+        subject and in one combined list. Then, at a time you choose, Unibud
+        sends a single notification asking what is due — so an assignment set
+        three weeks ago does not become tomorrow's problem.</p>
+      </div>
+      <div class="feat-art">
+        <img class="shot" src="shots/04-todo.webp" width="560" height="1214"
+             alt="The to-do screen, showing tasks grouped with the subject each belongs to.">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="privacy">
+  <div class="wrap">
+    <div class="card panel">
+      <span class="eyebrow">Privacy</span>
+      <h2>There is no cloud. There is just your phone.</h2>
+      <p>Unibud has no sign-up, because there is nothing to sign up to. Every
+      subject, deadline and file you add is written to a database on your
+      device and stays there. It is not a promise about how carefully your
+      data is handled somewhere else — there is no somewhere else.</p>
+      <ul class="facts">
+        <li><b>Accounts</b>None. Nothing to create, nothing to lose.</li>
+        <li><b>Network requests</b>Zero. The app never contacts a server.</li>
+        <li><b>Analytics &amp; ads</b>Neither, and no third-party SDKs.</li>
+        <li><b>Offline</b>Everything works with the plane mode on.</li>
+      </ul>
+      <p style="margin-top:22px">
+        <a class="btn" href="privacy.html">Read the full policy</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head"><h2>Questions worth answering first.</h2></div>
+    <div class="faq">
+      <div class="card">
+        <h3>Does it sync between devices?</h3>
+        <p>No. Your data lives on one device, which is the trade for having no
+        account and no server. If that is a dealbreaker, this is the wrong app
+        and better to know now.</p>
+      </div>
+      <div class="card">
+        <h3>What happens to my files?</h3>
+        <p>Attach lecture notes and slides to a subject and Unibud keeps them
+        filed there with a list of the chapters you are revising against each
+        one. It stores and lists them; it does not open them for reading.</p>
+      </div>
+      <div class="card">
+        <h3>Will it nag me?</h3>
+        <p>One check-in a day, at a time you pick, plus the deadline reminders
+        you set yourself. There are no streaks, badges or motivational push
+        notifications.</p>
+      </div>
+      <div class="card">
+        <h3>What does it cost?</h3>
+        <p>Free, with no in-app purchases and no subscription. There is no
+        paid tier holding features back.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-in">
+    <strong>Unibud</strong>
+    <div class="foot-links">
+      <a href="privacy.html">Privacy policy</a>
+      <a href="support.html">Support</a>
+      <a href="mailto:unibudapp@gmail.com">unibudapp@gmail.com</a>
+    </div>
+    <p class="fine">Unibud keeps your coursework on your phone, and nowhere else.</p>
+  </div>
+</footer>
+
 </body>
 </html>
