@@ -50,7 +50,7 @@ export interface Doc {
   created_at: number;
 }
 
-/** A manually marked section of a document. See docs/unibud-concept-spec.pdf,
+/** A manually marked section of a document. See spec/unibud-concept-spec.pdf,
  *  open question 2: v1 divides chapters by hand rather than parsing the file. */
 export interface Chapter {
   id: number;

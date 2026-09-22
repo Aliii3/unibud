@@ -5,7 +5,7 @@ chapters, to-dos and deadlines live inside them. Once a day Unibud asks what is
 due, rather than waiting to be told.
 
 Built from the handwritten concept notes — see
-[`docs/unibud-concept-spec.pdf`](docs/unibud-concept-spec.pdf) for the written
+[`spec/unibud-concept-spec.pdf`](spec/unibud-concept-spec.pdf) for the written
 specification, including the open questions the notes left unanswered.
 
 ## Brand
@@ -87,7 +87,7 @@ npx expo-doctor      # project health
 npm run web          # open it in a browser, no simulator needed
 npm run test:schema  # migrations, cascades and CHECK constraints
 npm run test:smoke   # drives every screen against a running dev server
-npm run spec         # regenerate docs/unibud-concept-spec.pdf
+npm run spec         # regenerate spec/unibud-concept-spec.pdf
 ```
 
 ## Shipping

@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "spec": "python3 docs/build_spec.py",
+    "spec": "python3 spec/build_spec.py",
     "test:schema": "node tests/schema.test.mjs",
     "test:smoke": "node tests/smoke.mjs",
     "build:ios": "npx eas-cli build --platform ios --profile production",

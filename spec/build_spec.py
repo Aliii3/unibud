@@ -1,7 +1,7 @@
 """Generate the Unibud concept specification PDF from the handwritten source notes.
 
-Usage: python3 docs/build_spec.py
-Output: docs/unibud-concept-spec.pdf
+Usage: python3 spec/build_spec.py
+Output: spec/unibud-concept-spec.pdf
 """
 
 import os
