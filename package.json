@@ -19,7 +19,8 @@
     "submit:android": "npx eas-cli submit --platform android --profile production",
     "icons": "python3 scripts/build_icons.py",
     "screenshots": "node scripts/capture_screens.mjs && python3 scripts/build_screenshots.py",
-    "check:listing": "python3 scripts/check_listing.py"
+    "check:listing": "python3 scripts/check_listing.py",
+    "site": "rm -rf site && mkdir -p site && cp docs/index.html docs/privacy.html site/ && echo 'site/ is ready - drag it onto https://app.netlify.com/drop'"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",

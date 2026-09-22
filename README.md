@@ -132,8 +132,7 @@ must have run through `eas build` before `eas submit` has anything to send.
 
 ## Public pages
 
-`docs/` doubles as the site GitHub Pages serves, which covers the two URLs
-App Store Connect insists on:
+`docs/` holds the two URLs App Store Connect insists on:
 
 | Page | Serves as |
 | --- | --- |
@@ -141,8 +140,17 @@ App Store Connect insists on:
 | `docs/privacy.html` | the Privacy policy URL |
 | `docs/privacy.md` | the same policy as readable source |
 
-Enable them in Settings → Pages → *Deploy from a branch*, folder `/docs`.
-`docs/.nojekyll` stops Jekyll rewriting anything.
+Both HTML pages are self-contained — no stylesheet, no image files, the
+logo is inline SVG — so hosting them is a matter of putting two files
+somewhere public.
+
+`npm run site` copies just those two into `site/`, which is gitignored.
+Drag that folder onto <https://app.netlify.com/drop> and the URLs are live.
+Re-run it and drag again after any edit to the policy.
+
+GitHub Pages would be the obvious host, but it is free only on public
+repositories and this one is private. `docs/.nojekyll` is left in place in
+case that ever changes.
 
 The support address on these pages is `unibudapp@gmail.com`. It is an
 address kept for the app rather than a personal one, because these pages are

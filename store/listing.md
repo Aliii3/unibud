@@ -86,12 +86,15 @@ Everything stays on your device. No account, no sync, no tracking.
 - **Age rating** — 4+. No user content, no web views, no ads.
 - **Privacy** — "Data Not Collected". Everything is device-local SQLite and
   the app makes no network requests, so every question answers the same way.
-- **Support URL** — `https://aliii3.github.io/unibud/`
-- **Privacy policy URL** — `https://aliii3.github.io/unibud/privacy.html`
+- **Support URL** — the deployed site root
+- **Privacy policy URL** — the same host, `/privacy.html`
 
-  Both are in `docs/`. Turn them on once in the repo's
-  Settings → Pages → *Deploy from a branch* → `main`, folder `/docs`.
-  Both URLs only resolve once that branch carries `docs/`, so enable it
-  after merging.
+  Run `npm run site` and drag the resulting `site/` folder onto
+  <https://app.netlify.com/drop>. That prints the host to use for both
+  fields. GitHub Pages is not an option here: it is free only on public
+  repositories, and this one is private.
+
+  Apple fetches the privacy URL, so it has to be reachable without a login
+  before the version is submitted, not after.
 - **Sign-in** — do not supply a demo account; there is no login. Say so in
   the review notes so a reviewer is not left looking for one.
