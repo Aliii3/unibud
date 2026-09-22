@@ -86,13 +86,16 @@ Everything stays on your device. No account, no sync, no tracking.
 - **Age rating** — 4+. No user content, no web views, no ads.
 - **Privacy** — "Data Not Collected". Everything is device-local SQLite and
   the app makes no network requests, so every question answers the same way.
-- **Support URL** — the deployed site root
-- **Privacy policy URL** — the same host, `/privacy.html`
+- **Support URL** — `https://aliii3.github.io/unibud/`
+- **Privacy policy URL** — `https://aliii3.github.io/unibud/privacy.html`
 
-  Run `npm run site` and drag the resulting `site/` folder onto
-  <https://app.netlify.com/drop>. That prints the host to use for both
-  fields. GitHub Pages is not an option here: it is free only on public
-  repositories, and this one is private.
+  Settings → Pages → *Deploy from a branch* → `main`, folder `/docs`.
+  A private repository can publish a public Pages site on the free plan;
+  what costs money is restricting who may *read* the published site, which
+  is the opposite of what a store listing needs.
+
+  Everything in `docs/` is published, not just the two pages, so anything
+  put there is public.
 
   Apple fetches the privacy URL, so it has to be reachable without a login
   before the version is submitted, not after.
