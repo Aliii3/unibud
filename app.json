@@ -1,0 +1,62 @@
+{
+  "expo": {
+    "name": "Unibud",
+    "slug": "unibud",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "unibud",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.unibud.app"
+    },
+    "android": {
+      "package": "com.unibud.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#3760F9",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      [
+        "expo-notifications",
+        {
+          "color": "#2E9E4F"
+        }
+      ],
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#F7F3EA",
+          "dark": {
+            "backgroundColor": "#17161B"
+          },
+          "imageWidth": 200
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "33a70933-613a-40b5-830e-84af06cd3823"
+      }
+    },
+    "owner": "aliyasserrr"
+  }
+}
