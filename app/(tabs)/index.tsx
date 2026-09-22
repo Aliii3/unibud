@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { countOpenReminders } from '@/db/reminders';
 import { createSubject, listSubjects, type SubjectSummary } from '@/db/subjects';
 import { FolderCard } from '@/features/subjects/FolderCard';
 import { useQuery } from '@/lib/useQuery';
@@ -27,10 +28,14 @@ export default function HomeScreen() {
   const db = useSQLiteContext();
   const router = useRouter();
   const { data, loading, refresh } = useQuery(listSubjects);
+  const reminders = useQuery(countOpenReminders);
   const [name, setName] = useState('');
 
   const subjects = data ?? [];
-  const openDeadlines = subjects.reduce((n, s) => n + s.open_deadlines, 0);
+  // Reminders belong to no subject, so they are counted separately and added
+  // in — otherwise the hero would claim "All clear" with reminders pending.
+  const openDeadlines =
+    subjects.reduce((n, s) => n + s.open_deadlines, 0) + (reminders.data ?? 0);
   const openTodos = subjects.reduce((n, s) => n + s.open_todos, 0);
 
   // Only the single most recent subject wears the badge — marking every

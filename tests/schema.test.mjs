@@ -81,5 +81,21 @@ const link = e.prepare('SELECT deadline_id FROM todos WHERE id=1').get().deadlin
 expect('deleting a deadline keeps its todo and clears the link',
   t === 1 && link === null, `todos=${t} deadline_id=${link}`);
 
+// 7. Reminders belong to no subject, so a subject delete must not touch them.
+const f = build({ foreignKeys: true });
+f.exec(`INSERT INTO reminders (title,due_at,created_at) VALUES ('See the coordinator',1,1)`);
+f.exec('DELETE FROM subjects WHERE id = 1');
+expect('reminders survive deleting every subject',
+  f.prepare('SELECT COUNT(*) n FROM reminders').get().n === 1,
+  'the reminder went with the subject');
+expect('reminders table takes no subject_id',
+  !f.prepare("SELECT sql FROM sqlite_master WHERE name='reminders'").get().sql.includes('subject_id'),
+  'reminders is coupled to subjects');
+
+let remRejected = false;
+try { f.exec(`INSERT INTO reminders (due_at,created_at) VALUES (1,1)`); }
+catch { remRejected = true; }
+expect('reminder title is required', remRejected, 'a reminder saved without a title');
+
 console.log(`\nschema checks: ${failures === 0 ? 'ALL PASS' : `${failures} FAILED`}`);
 process.exit(failures ? 1 : 0);

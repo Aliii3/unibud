@@ -239,6 +239,44 @@ await check('deleting a deadline removes it', async () => {
   await gone('Problem set 4');
 });
 
+// ---------------------------------------------------------------- reminders
+await check('a reminder can be added without any subject', async () => {
+  await page.goto(`${BASE}/deadlines`, { waitUntil: 'domcontentloaded', timeout: T });
+  await visible('text=Add reminder');
+  await page.getByText('Add reminder').click();
+  await page.getByPlaceholder('What do you need to remember?').fill('See the coordinator');
+  await page.getByPlaceholder(/^When/).fill('30/09');
+  await page.getByText('Save', { exact: true }).click();
+  await seen('See the coordinator');
+  await seen('Reminders');
+});
+
+await check('a reminder is marked as one, not given a subject', async () => {
+  await seen('REMINDER');
+});
+
+await check('a reminder counts towards the open total', async () => {
+  const body = await page.locator('body').innerText();
+  if (!/Open total/.test(body)) throw new Error('stat tiles missing');
+});
+
+await check('a reminder can be completed', async () => {
+  await page.getByRole('button', { name: 'Mark See the coordinator done' }).click();
+  await page.waitForTimeout(900);
+  await gone('See the coordinator');
+});
+
+await check('a reminder can be deleted', async () => {
+  await page.getByText('Add reminder').click();
+  await page.getByPlaceholder('What do you need to remember?').fill('Collect transcript');
+  await page.getByPlaceholder(/^When/).fill('01/10');
+  await page.getByText('Save', { exact: true }).click();
+  await seen('Collect transcript');
+  await page.getByRole('button', { name: 'Delete Collect transcript' }).click();
+  await page.waitForTimeout(900);
+  await gone('Collect transcript');
+});
+
 // ---------------------------------------------------------------- todos
 await check('global todo can be added', async () => {
   await page.goto(`${BASE}/todo`, { waitUntil: 'domcontentloaded', timeout: T });

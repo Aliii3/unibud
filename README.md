@@ -228,6 +228,13 @@ one that has shipped, or existing installs will skip it.
 Every table cascades from `subjects`, so deleting a subject removes its
 schedule, documents, chapters, to-dos and deadlines with it.
 
+`reminders` is the one table that stands outside a subject — for anything
+not tied to coursework, like seeing the coordinator. It is a separate table
+rather than a nullable `subject_id` because SQLite cannot relax NOT NULL
+without rebuilding the table, and `todos.deadline_id` references
+`deadlines`, so a rebuild would mean turning foreign keys off part way
+through a migration.
+
 ### Notifications
 
 Two kinds, both local — nothing is sent to a server:

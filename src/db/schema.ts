@@ -76,4 +76,21 @@ export const MIGRATIONS: string[] = [
   `
   ALTER TABLE subjects ADD COLUMN icon TEXT NOT NULL DEFAULT 'book';
   `,
+
+  // v3 — reminders that belong to no subject ("collect transcript", "see the
+  // coordinator"). A separate table rather than a nullable subjects
+  // reference: SQLite cannot relax NOT NULL without rebuilding the table,
+  // and todos.deadline_id points at deadlines, so a rebuild would mean
+  // turning foreign keys off part way through a migration.
+  `
+  CREATE TABLE reminders (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    title       TEXT    NOT NULL,
+    due_at      INTEGER NOT NULL,
+    done        INTEGER NOT NULL DEFAULT 0,
+    reminder_id TEXT,
+    created_at  INTEGER NOT NULL
+  );
+  CREATE INDEX idx_reminders_due ON reminders(done, due_at);
+  `,
 ];

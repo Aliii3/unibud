@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AddDeadlineForm } from '@/features/deadlines/AddDeadlineForm';
+import { AddReminderForm } from '@/features/reminders/AddReminderForm';
 import {
   Button,
   Card,
@@ -17,6 +18,12 @@ import {
   StatTile,
 } from '@/ui';
 import { deleteDeadline, listOpenDeadlines, setDeadlineDone } from '@/db/deadlines';
+import {
+  deleteReminder,
+  listOpenReminders,
+  type Reminder,
+  setReminderDone,
+} from '@/db/reminders';
 import type { Deadline, WithSubject } from '@/db/types';
 import { formatDueDate, isOverdue, relativeDue } from '@/lib/format';
 import { cancel } from '@/lib/notifications';
@@ -27,14 +34,21 @@ import { colors, spacing } from '@/theme';
 export default function DeadlinesScreen() {
   const db = useSQLiteContext();
   const { data, loading, refresh } = useQuery(listOpenDeadlines);
-  const [adding, setAdding] = useState(false);
+  const remindersQuery = useQuery(listOpenReminders);
+  const [adding, setAdding] = useState<null | 'deadline' | 'reminder'>(null);
 
   const deadlines = data ?? [];
+  const reminders = remindersQuery.data ?? [];
   const overdue = deadlines.filter((d) => isOverdue(d.due_at));
   const upcoming = deadlines.filter((d) => !isOverdue(d.due_at));
-  const thisWeek = upcoming.filter(
-    (d) => d.due_at < Date.now() + 7 * 86_400_000
-  );
+  const soon = Date.now() + 7 * 86_400_000;
+  const thisWeek = [
+    ...upcoming.filter((d) => d.due_at < soon),
+    ...reminders.filter((r) => !isOverdue(r.due_at) && r.due_at < soon),
+  ];
+  const overdueCount =
+    overdue.length + reminders.filter((r) => isOverdue(r.due_at)).length;
+  const openTotal = deadlines.length + reminders.length;
 
   async function onComplete(deadline: WithSubject<Deadline>) {
     await setDeadlineDone(db, deadline.id, true);
@@ -71,24 +85,48 @@ export default function DeadlinesScreen() {
         />
 
         <View style={styles.tiles}>
-          <StatTile value={String(overdue.length)} label="Overdue" tone="lime" />
+          <StatTile value={String(overdueCount)} label="Overdue" tone="lime" />
           <StatTile value={String(thisWeek.length)} label="Next 7 days" tone="lavender" />
-          <StatTile value={String(deadlines.length)} label="Open total" />
+          <StatTile value={String(openTotal)} label="Open total" />
         </View>
 
-        {adding ? (
+        {adding === 'deadline' ? (
           <View style={styles.form}>
             <AddDeadlineForm
               onAdded={() => {
-                setAdding(false);
+                setAdding(null);
                 refresh();
               }}
-              onCancel={() => setAdding(false)}
+              onCancel={() => setAdding(null)}
+            />
+          </View>
+        ) : adding === 'reminder' ? (
+          <View style={styles.form}>
+            <AddReminderForm
+              onAdded={() => {
+                setAdding(null);
+                remindersQuery.refresh();
+              }}
+              onCancel={() => setAdding(null)}
             />
           </View>
         ) : (
-          <View style={styles.cta}>
-            <Button label="Add deadline" icon="add" onPress={() => setAdding(true)} />
+          <View style={styles.ctaRow}>
+            <View style={styles.cta}>
+              <Button
+                label="Add deadline"
+                icon="add"
+                onPress={() => setAdding('deadline')}
+              />
+            </View>
+            <View style={styles.cta}>
+              <Button
+                label="Add reminder"
+                icon="notifications-outline"
+                variant="quiet"
+                onPress={() => setAdding('reminder')}
+              />
+            </View>
           </View>
         )}
 
@@ -122,11 +160,33 @@ export default function DeadlinesScreen() {
           </>
         ) : null}
 
-        {!loading && deadlines.length === 0 && !adding ? (
+        {reminders.length > 0 ? (
+          <>
+            <SectionHeader>Reminders</SectionHeader>
+            {reminders.map((r) => (
+              <ReminderRow
+                key={r.id}
+                reminder={r}
+                onComplete={async () => {
+                  await setReminderDone(db, r.id, true);
+                  await cancel(r.reminder_id);
+                  remindersQuery.refresh();
+                }}
+                onDelete={async () => {
+                  await cancel(r.reminder_id);
+                  await deleteReminder(db, r.id);
+                  remindersQuery.refresh();
+                }}
+              />
+            ))}
+          </>
+        ) : null}
+
+        {!loading && deadlines.length === 0 && reminders.length === 0 && !adding ? (
           <EmptyState
             icon="alarm-outline"
             title="Nothing due"
-            body="Deadlines show up on their subject too, and set a reminder before they are due."
+            body="Deadlines belong to a subject. Reminders are for everything else \u2014 seeing the coordinator, collecting a transcript."
           />
         ) : null}
       </ScrollView>
@@ -179,11 +239,53 @@ function DeadlineRow({
   );
 }
 
+/** A reminder has no subject, so it is marked rather than colour-coded. */
+function ReminderRow({
+  reminder,
+  onComplete,
+  onDelete,
+}: {
+  reminder: Reminder;
+  onComplete: () => void;
+  onDelete: () => void;
+}) {
+  const late = isOverdue(reminder.due_at);
+  return (
+    <Card accent={late ? colors.danger : colors.ink}>
+      <View style={styles.row}>
+        <IconButton
+          icon="ellipse-outline"
+          label={`Mark ${reminder.title} done`}
+          onPress={onComplete}
+          color={colors.ink}
+        />
+        <View style={styles.rowBody}>
+          <Text style={styles.rowTitle}>{reminder.title}</Text>
+          <Text style={styles.rowMeta}>{formatDueDate(reminder.due_at)}</Text>
+          <View style={styles.rowTags}>
+            <Pill label="Reminder" color={colors.lavender} />
+            <Text style={[styles.due, late ? styles.late : null]}>
+              {relativeDue(reminder.due_at)}
+            </Text>
+          </View>
+        </View>
+        <IconButton
+          icon="trash-outline"
+          label={`Delete ${reminder.title}`}
+          color={colors.faint}
+          onPress={onDelete}
+        />
+      </View>
+    </Card>
+  );
+}
+
 const styles = StyleSheet.create({
+  ctaRow: { gap: spacing.md, marginBottom: spacing.sm },
   screen: { flex: 1, backgroundColor: colors.canvas },
   content: { padding: spacing.lg, paddingBottom: spacing.xxl },
   tiles: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.xl },
-  cta: { marginBottom: spacing.sm },
+  cta: {},
   form: { marginBottom: spacing.sm },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   rowBody: { flex: 1, minWidth: 0 },
