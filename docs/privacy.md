@@ -78,4 +78,4 @@ the date at the top will change.
 
 ## Contact
 
-Questions about this policy: CONTACT_EMAIL
+Questions about this policy: unibudapp@gmail.com

@@ -90,9 +90,8 @@ Everything stays on your device. No account, no sync, no tracking.
 - **Privacy policy URL** — `https://aliii3.github.io/unibud/privacy.html`
 
   Both are in `docs/`. Turn them on once in the repo's
-  Settings → Pages → *Deploy from a branch* → the working branch, folder
-  `/docs`. Replace `CONTACT_EMAIL` in `docs/index.html`,
-  `docs/privacy.html` and `docs/privacy.md` first — the pages are public,
-  so put in whichever address you are happy to publish.
+  Settings → Pages → *Deploy from a branch* → `main`, folder `/docs`.
+  Both URLs only resolve once that branch carries `docs/`, so enable it
+  after merging.
 - **Sign-in** — do not supply a demo account; there is no login. Say so in
   the review notes so a reviewer is not left looking for one.

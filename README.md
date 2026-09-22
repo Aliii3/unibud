@@ -144,9 +144,9 @@ App Store Connect insists on:
 Enable them in Settings → Pages → *Deploy from a branch*, folder `/docs`.
 `docs/.nojekyll` stops Jekyll rewriting anything.
 
-**Before publishing, replace `CONTACT_EMAIL`** in `docs/index.html`,
-`docs/privacy.html` and `docs/privacy.md`. These pages are public, so that
-address is public too.
+The support address on these pages is `unibudapp@gmail.com`. It is an
+address kept for the app rather than a personal one, because these pages are
+public and get scraped. Apple checks that it receives mail.
 
 The policy says the app collects nothing and makes no network requests.
 That is checked, not assumed — no fetch or upload call in `app/` or `src/`,
