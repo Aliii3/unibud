@@ -102,3 +102,8 @@ Everything stays on your device. No account, no sync, no tracking.
   before the version is submitted, not after.
 - **Sign-in** — do not supply a demo account; there is no login. Say so in
   the review notes so a reviewer is not left looking for one.
+- **Review notes** — `store/review-notes.md`. A first submission from an
+  account with no review history draws a Guideline 2.1 request for the
+  app's purpose, how to reach its features, and which external services it
+  uses. That file answers all of it and belongs in the Notes field, not
+  just in a one-off Resolution Center reply.
