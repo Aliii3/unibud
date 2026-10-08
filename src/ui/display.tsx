@@ -141,8 +141,11 @@ export function IconTile({
   color: string;
   size?: number;
 }) {
+  // A tile has an explicit size, so it must not be stretched by its parent.
+  // Every caller so far has been a row with `alignItems` set, which hid this;
+  // in a column the surface filled the width and the icon sat in the corner.
   return (
-    <Surface fill={color} r={radius.sm} depth={0}>
+    <Surface fill={color} r={radius.sm} depth={0} style={styles.iconTileWrap}>
       <View style={[styles.iconTile, { width: size, height: size }]}>
         <Ionicons name={icon} size={size * 0.5} color={onSubject(color)} />
       </View>
@@ -260,6 +263,7 @@ const styles = StyleSheet.create({
   tileValue: { ...type.title, color: colors.ink },
   tileLabel: { fontSize: 12, color: colors.muted, marginTop: 4, fontWeight: '600' },
 
+  iconTileWrap: { alignSelf: 'flex-start' },
   iconTile: { alignItems: 'center', justifyContent: 'center' },
 
   pill: {

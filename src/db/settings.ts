@@ -6,6 +6,7 @@ export const KEYS = {
   dailyPromptMinute: 'daily_prompt_minute',
   dailyPromptId: 'daily_prompt_notification_id',
   reminderLeadHours: 'reminder_lead_hours',
+  walkthroughSeen: 'walkthrough_seen',
 } as const;
 
 export const DEFAULTS = {

@@ -37,6 +37,19 @@ await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: T });
 const field = page.getByPlaceholder('Name a subject to add');
 await field.waitFor({ state: 'visible', timeout: T });
 
+// A fresh database shows the first-run walkthrough over everything, which
+// would be the only thing in every shot. Step to the end and close it.
+const tour = page.getByText('A folder for every subject').first();
+if (await tour.isVisible({ timeout: 5000 }).catch(() => false)) {
+  for (let i = 0; i < 5; i += 1) {
+    await page.getByText('Next', { exact: true }).click();
+    await page.waitForTimeout(180);
+  }
+  await page.getByText('Start using Unibud', { exact: true }).click();
+  await tour.waitFor({ state: 'hidden', timeout: 15000 });
+  console.log('dismissed the first-run walkthrough');
+}
+
 // --- seed -----------------------------------------------------------------
 const SUBJECTS = ['Organic Chemistry', 'Linear Algebra', 'Microeconomics', 'World History'];
 for (const n of SUBJECTS) {

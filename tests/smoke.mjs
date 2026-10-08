@@ -72,6 +72,23 @@ const tapTab = async (name) => {
   await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
 };
 
+/**
+ * Dates relative to today, as DD/MM/YYYY. Fixed dates expire: `30/09` was
+ * written as "a future deadline" and became an overdue one on 1 October,
+ * failing a check about sorting for reasons that had nothing to do with it.
+ * The year is spelled out because DD/MM alone is read as the current year.
+ */
+const dmy = (offsetDays) => {
+  const d = new Date(Date.now() + offsetDays * 86400000);
+  return [
+    String(d.getDate()).padStart(2, '0'),
+    String(d.getMonth() + 1).padStart(2, '0'),
+    d.getFullYear(),
+  ].join('/');
+};
+const FUTURE = dmy(21);
+const PAST = dmy(-21);
+
 const addSubject = async (n) => {
   const f = page.getByPlaceholder('Name a subject to add');
   await f.fill(n);
@@ -84,6 +101,45 @@ await check('app boots and reaches Home', async () => {
   await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: T });
   await page.getByPlaceholder('Name a subject to add').waitFor({ state: 'visible', timeout: T });
   await seen('Save now.');
+});
+
+// ------------------------------------------------------ first-run walkthrough
+// This runs before anything that clicks, because the tour is a modal over
+// the whole app on a fresh database and would swallow those taps.
+await check('walkthrough appears on first launch', async () => {
+  await seen('A folder for every subject');
+  await seen('01 / 06');
+});
+
+await check('walkthrough steps forward and back', async () => {
+  await page.getByText('Next', { exact: true }).click();
+  await seen('Deadlines you can see coming');
+  await seen('02 / 06');
+  // The back control is an icon with no label, so it is found by position:
+  // the only button to the left of the Next button in the action row.
+  await page.getByText('Next', { exact: true }).click();
+  await seen('Tasks know their subject');
+});
+
+await check('walkthrough reaches its last step', async () => {
+  for (let i = 0; i < 3; i += 1) {
+    await page.getByText('Next', { exact: true }).click();
+    await page.waitForTimeout(150);
+  }
+  await seen('Nothing leaves your phone');
+  await seen('06 / 06');
+  await seen('Start using Unibud');
+});
+
+await check('walkthrough closes and does not return', async () => {
+  await page.getByText('Start using Unibud', { exact: true }).click();
+  await gone('Nothing leaves your phone', 15000);
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: T });
+  await page.getByPlaceholder('Name a subject to add').waitFor({ state: 'visible', timeout: T });
+  await page.waitForTimeout(1200);
+  if (await text('A folder for every subject').first().isVisible().catch(() => false)) {
+    throw new Error('walkthrough shown again after it was completed');
+  }
 });
 
 await check('empty state shown when there are no subjects', async () => {
@@ -201,7 +257,7 @@ await check('deadline form rejects a malformed date', async () => {
 await check('deadline saves with kind and subject', async () => {
   await page.getByRole('button', { name: 'quiz', exact: true }).first().click();
   await page.getByRole('button', { name: 'Linear Algebra', exact: true }).first().click();
-  await page.getByPlaceholder(/Due date/).fill('30/09');
+  await page.getByPlaceholder(/Due date/).fill(FUTURE);
   await page.getByText('Save', { exact: true }).click();
   await seen('Problem set 4');
   await seen('QUIZ');
@@ -215,7 +271,7 @@ await check('a past date files under Overdue and is flagged late', async () => {
   await page.getByText('Add deadline').click();
   await page.getByPlaceholder('What is due?').fill('Late essay');
   await page.getByRole('button', { name: 'Linear Algebra', exact: true }).first().click();
-  await page.getByPlaceholder(/Due date/).fill('01/03');
+  await page.getByPlaceholder(/Due date/).fill(PAST);
   await page.getByText('Save', { exact: true }).click();
   await seen('Late essay');
   await seen('Overdue');
@@ -245,7 +301,7 @@ await check('a reminder can be added without any subject', async () => {
   await visible('text=Add reminder');
   await page.getByText('Add reminder').click();
   await page.getByPlaceholder('What do you need to remember?').fill('See the coordinator');
-  await page.getByPlaceholder(/^When/).fill('30/09');
+  await page.getByPlaceholder(/^When/).fill(FUTURE);
   await page.getByText('Save', { exact: true }).click();
   await seen('See the coordinator');
   await seen('Reminders');
@@ -269,7 +325,7 @@ await check('a reminder can be completed', async () => {
 await check('a reminder can be deleted', async () => {
   await page.getByText('Add reminder').click();
   await page.getByPlaceholder('What do you need to remember?').fill('Collect transcript');
-  await page.getByPlaceholder(/^When/).fill('01/10');
+  await page.getByPlaceholder(/^When/).fill(FUTURE);
   await page.getByText('Save', { exact: true }).click();
   await seen('Collect transcript');
   await page.getByRole('button', { name: 'Delete Collect transcript' }).click();
@@ -356,11 +412,22 @@ await check('settings rejects an out-of-range reminder lead', async () => {
 await check('settings saves and reports back', async () => {
   await page.getByPlaceholder('24').fill('12');
   await page.getByText('Save', { exact: true }).click();
-  await page.waitForTimeout(1500);
-  const body = await page.locator('body').innerText();
-  if (!/Unibud will ask you|could not|turned off|notifications are turned off/i.test(body)) {
-    throw new Error('no status message after save');
-  }
+  // Saving asks for notification permission on the way, which lands at about
+  // a second and a half. A fixed sleep of exactly that raced it and lost;
+  // wait for the message instead of guessing how long it takes.
+  await page
+    .getByText(/Unibud will ask you|could not|turned off/i)
+    .first()
+    .waitFor({ timeout: T });
+});
+
+await check('settings can replay the walkthrough', async () => {
+  await page.getByText('Show walkthrough', { exact: true }).click();
+  // Replaying must start from step one, not wherever it was left.
+  await seen('A folder for every subject');
+  await seen('01 / 06');
+  await page.getByText('Skip', { exact: true }).click();
+  await gone('A folder for every subject', 15000);
 });
 
 // ---------------------------------------------------------------- persistence

@@ -260,6 +260,28 @@ without rebuilding the table, and `todos.deadline_id` references
 `deadlines`, so a rebuild would mean turning foreign keys off part way
 through a migration.
 
+### First-run walkthrough
+
+`src/features/walkthrough/Walkthrough.tsx` is a six-step modal shown once on
+first launch, and replayable from Settings. It exists because two of the
+app's features sit behind an unlabelled icon in the home header — the
+timetable and the daily check-in — and a check-in nobody finds is the same
+as no check-in.
+
+Whether it has been shown is a `walkthrough_seen` row in `settings`, which
+is a plain key/value table, so this needed no migration. The flag is written
+when the tour closes rather than when it opens, so an app killed part way
+through shows it again.
+
+Replaying it from Settings deliberately does not clear the flag. Clearing it
+would mean the tour returned on the next launch, which reads as a bug rather
+than a feature.
+
+Anything that drives the app from a fresh database has to get past it:
+`tests/smoke.mjs` steps through it in its first checks, before anything that
+clicks, and `scripts/capture_screens.mjs` dismisses it so it is not the only
+thing in every store screenshot.
+
 ### Notifications
 
 Two kinds, both local — nothing is sent to a server:
@@ -272,7 +294,8 @@ Two kinds, both local — nothing is sent to a server:
 ## State of the build
 
 Working: subjects, weekly schedule, deadlines and quizzes with reminders,
-to-dos, document upload, manual chapter division, the daily check-in.
+to-dos, document upload, manual chapter division, the daily check-in, and
+the first-run walkthrough.
 
 Deliberately not built yet:
 

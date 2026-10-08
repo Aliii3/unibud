@@ -2,6 +2,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
+import { Walkthrough } from '@/features/walkthrough/Walkthrough';
 import { Button, Card, Field, ScreenTitle, SectionHeader } from '@/ui';
 import {
   DEFAULTS,
@@ -28,6 +29,7 @@ export default function SettingsScreen() {
   const [lead, setLead] = useState(String(DEFAULTS.reminderLeadHours));
   const [status, setStatus] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [tour, setTour] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -150,6 +152,30 @@ export default function SettingsScreen() {
       </View>
 
       {status ? <Text style={styles.status}>{status}</Text> : null}
+
+      <SectionHeader>How Unibud works</SectionHeader>
+      <Card>
+        <View style={styles.row}>
+          <View style={styles.rowBody}>
+            <Text style={styles.rowTitle}>Walkthrough</Text>
+            <Text style={styles.rowMeta}>
+              The six-step tour shown on first launch.
+            </Text>
+          </View>
+        </View>
+        <View style={styles.rowAction}>
+          <Button
+            label="Show walkthrough"
+            variant="quiet"
+            icon="play-outline"
+            onPress={() => setTour(true)}
+          />
+        </View>
+      </Card>
+
+      {/* Replaying it here does not touch the seen flag: it is already set,
+          and clearing it would show the tour again on the next launch. */}
+      <Walkthrough visible={tour} onDone={() => setTour(false)} />
     </ScrollView>
   );
 }
@@ -163,7 +189,8 @@ const styles = StyleSheet.create({
   rowMeta: { fontSize: 12, color: colors.muted, marginTop: 2 },
   body: { fontSize: 14, color: colors.muted, marginBottom: spacing.sm, lineHeight: 20 },
   hint: { fontSize: 12, color: colors.warning, marginTop: spacing.xs },
-  save: { marginTop: spacing.xl },
+  rowAction: { marginTop: spacing.lg },
+  save: { marginTop: spacing.xl, marginBottom: spacing.xl },
   status: {
     marginTop: spacing.md,
     fontSize: 13,

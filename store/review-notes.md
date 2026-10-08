@@ -20,8 +20,11 @@ local notification asking what is due.
 
 ACCESS
 No account, no login, no demo credentials needed. The app opens straight to
-the home screen. It is empty on first launch by design — add a subject with
-the field at the top of the home screen and the rest of the app fills in.
+the home screen and runs a six-step walkthrough on first launch explaining
+where each feature lives. It is empty until you add something, by design —
+add a subject with the field at the top of the home screen and the rest of
+the app fills in. The walkthrough can be reopened at any time from
+Settings, under "How Unibud works".
 
 DATA AND SERVICES
 No backend. No network requests of any kind. Everything is stored in a
@@ -90,16 +93,22 @@ no streaks, no social feed.
 ### 3. Setting up and accessing the main features
 
 **No login credentials are required.** There is no account system. The app
-opens directly to its home screen with no onboarding, paywall or sign-up.
+opens directly to its home screen with no paywall or sign-up.
 
-The app is empty on first launch, which is intended — it holds the user's
-own coursework, so there is nothing to show until they add some. To reach
-every feature:
+On first launch it runs a six-step walkthrough naming each feature and where
+it lives, which can be skipped at any point and reopened later from
+Settings → "How Unibud works" → Show walkthrough. Two features are reachable
+only from an icon in the home header — the timetable and the daily check-in
+— so the walkthrough points at both.
+
+Beyond that the app is empty until the user adds something, which is
+intended: it holds their own coursework, so there is nothing to show until
+there is some. To reach every feature:
 
 1. **Add a subject.** On the home screen, type a name into the field at the
    top (for example "Organic Chemistry") and tap the add button. The subject
    appears as a folder card. Add two or three.
-2. **Open a subject** by tapping its card, to see its deadlines, tasks and
+11. **Open a subject** by tapping its card, to see its deadlines, tasks and
    documents, and to attach a file from the device.
 3. **Deadlines tab** — add an assignment, quiz or exam with a due date, and
    optionally a reminder a set number of hours ahead. Standalone reminders,
@@ -169,18 +178,20 @@ button.
 Aim for 60–90 seconds, unhurried, pausing on each screen long enough to
 read it:
 
-1. Home screen, empty, straight after launch
-2. Type a subject name, add it. Add two more.
-3. Tap into a subject — show its deadlines, tasks and documents
-4. Attach a document: tap upload, pick a file, show it appear in the list
-5. Deadlines tab: add a deadline with a due date and a reminder
-6. Add a standalone reminder, to show it works without a subject
-7. Todo tab: add a task against a subject, tick it off
-8. Schedule: add a class, show the weekly timetable
-9. Settings: set the daily check-in time, accept the notification prompt
-10. Background the app and let the notification arrive on the lock screen
+1. The first-run walkthrough, stepping through a few of its screens, then
+   closing it
+2. Home screen, empty
+3. Type a subject name, add it. Add two more.
+4. Tap into a subject — show its deadlines, tasks and documents
+5. Attach a document: tap upload, pick a file, show it appear in the list
+6. Deadlines tab: add a deadline with a due date and a reminder
+7. Add a standalone reminder, to show it works without a subject
+8. Todo tab: add a task against a subject, tick it off
+9. Schedule: add a class, show the weekly timetable
+10. Settings: set the daily check-in time, accept the notification prompt
+11. Background the app and let the notification arrive on the lock screen
 
-Point 10 is worth waiting for. It is the app's central feature and the one
+Point 11 is worth waiting for. It is the app's central feature and the one
 thing a reviewer cannot infer from a static screen.
 
 Stop the recording, then attach the video to the Resolution Center reply.

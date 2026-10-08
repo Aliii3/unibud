@@ -1,12 +1,14 @@
 import { useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { countOpenReminders } from '@/db/reminders';
+import { getBoolSetting, KEYS, setSetting } from '@/db/settings';
 import { createSubject, listSubjects, type SubjectSummary } from '@/db/subjects';
 import { FolderCard } from '@/features/subjects/FolderCard';
+import { Walkthrough } from '@/features/walkthrough/Walkthrough';
 import { useQuery } from '@/lib/useQuery';
 import { colors, spacing, type } from '@/theme';
 import {
@@ -30,6 +32,24 @@ export default function HomeScreen() {
   const { data, loading, refresh } = useQuery(listSubjects);
   const reminders = useQuery(countOpenReminders);
   const [name, setName] = useState('');
+  const [tour, setTour] = useState(false);
+
+  // First launch shows the tour once. The flag is written when it closes
+  // rather than when it opens, so an app killed mid-tour shows it again.
+  useEffect(() => {
+    let live = true;
+    void getBoolSetting(db, KEYS.walkthroughSeen, false).then((seen) => {
+      if (live && !seen) setTour(true);
+    });
+    return () => {
+      live = false;
+    };
+  }, [db]);
+
+  async function endTour() {
+    setTour(false);
+    await setSetting(db, KEYS.walkthroughSeen, '1');
+  }
 
   const subjects = data ?? [];
   // Reminders belong to no subject, so they are counted separately and added
@@ -147,6 +167,8 @@ export default function HomeScreen() {
           )
         }
       />
+
+      <Walkthrough visible={tour} onDone={endTour} />
     </SafeAreaView>
   );
 }
