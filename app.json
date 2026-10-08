@@ -12,7 +12,8 @@
       "bundleIdentifier": "com.unibud.app",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "buildNumber": "3"
     },
     "android": {
       "package": "com.unibud.app",

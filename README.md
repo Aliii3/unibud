@@ -100,10 +100,21 @@ npm run spec         # regenerate spec/unibud-concept-spec.pdf
 | `preview` | an installable internal build (`npm run build:preview`) |
 | `production` | a store build (`npm run build:ios` / `build:android`) |
 
-Versioning uses `appVersionSource: "remote"`, so **EAS owns the build number
-and version code** — that is why neither is set in `app.json`. Bump
-`expo.version` there for a marketing version (currently `1.0.0`); the build
-number increments by itself.
+### Version numbers
+
+`appVersionSource` is `"local"`, so **`app.json` is the single source of
+truth** for `expo.version` (the marketing version, currently `1.0.0`) and
+`expo.ios.buildNumber`.
+
+It was `"remote"`, with EAS keeping its own counter, which works right up
+until something other than EAS uploads a build. Xcode then writes whatever
+`prebuild` put in `Info.plist`, App Store Connect refuses a build number it
+has already seen, and the error names the number rather than the cause.
+One counter in git avoids that.
+
+**Every upload needs a build number no App Store Connect has seen before,
+for a given `expo.version`.** `production` has `autoIncrement: true`, so an
+EAS build bumps it; building in Xcode does not, so bump it by hand there.
 
 First time, on a machine logged into your Apple account:
 
@@ -129,6 +140,29 @@ repo: screenshots at the required device sizes, a privacy policy URL, and
 the privacy questionnaire — which for Unibud is "no data collected", since
 everything is stored on the device and nothing is sent anywhere. A build
 must have run through `eas build` before `eas submit` has anything to send.
+
+### Building locally in Xcode instead
+
+EAS compiles on Expo's machines, so a build needs their service to be
+reachable. The native project can be generated locally instead, which needs
+Xcode installed and makes you responsible for signing:
+
+```bash
+npm run prebuild:ios    # writes the ios/ project from app.json
+npm run xcode           # opens the workspace
+```
+
+Then in Xcode: pick **Any iOS Device (arm64)**, set the team under
+*Signing & Capabilities*, bump **Build** past the last uploaded number, and
+**Product → Archive → Distribute App → App Store Connect**.
+
+`ios/` is gitignored and regenerated from `app.json` and the plugin list, so
+never hand-edit anything inside it — `--clean` throws it away each run. A
+native change belongs in `app.json` or a config plugin.
+
+The simpler route when EAS is reachable is still `npm run build:ios` and
+`npm run submit:ios`: no Xcode, no certificates to manage, and no 300MB
+`.ipa` to move around. The local path is the fallback, not the default.
 
 ## Public pages
 
