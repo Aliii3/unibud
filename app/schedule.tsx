@@ -81,7 +81,15 @@ export default function ScheduleScreen() {
       <ScreenTitle title={'Your week,\nclass by class.'} />
 
       <View style={styles.form}>
-        <View style={styles.chips}>
+        {/* Subject names vary from "Maths" to "Introduction to Organic
+            Chemistry", so equal widths would truncate the long ones and
+            content widths wrap into ragged rows. One scrolling line avoids
+            both. */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipScroll}
+        >
           {subjects.map((s) => (
             <Chip
               key={s.id}
@@ -91,12 +99,13 @@ export default function ScheduleScreen() {
               onPress={() => setSubjectId(s.id)}
             />
           ))}
-        </View>
+        </ScrollView>
 
-        <View style={styles.chips}>
+        <View style={styles.dayRow}>
           {WEEKDAYS_SHORT.map((day, index) => (
             <Chip
               key={day}
+              fill
               label={day}
               selected={weekday === index}
               onPress={() => setWeekday(index)}
@@ -190,7 +199,10 @@ const styles = StyleSheet.create({
     borderWidth: border.width,
     borderColor: border.color,
   },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
+  chipScroll: { flexDirection: 'row', gap: spacing.xs, paddingRight: spacing.xs },
+  // Seven equal shares, no wrapping: three-letter labels in ragged rows of
+  // five and two read as an accident.
+  dayRow: { flexDirection: 'row', gap: spacing.xs },
   times: { flexDirection: 'row', gap: spacing.sm },
   // minWidth lets the two inputs actually share the row instead of the
   // second one overflowing its card.

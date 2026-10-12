@@ -35,7 +35,12 @@ export function FolderCard({
       style={({ pressed }) => [styles.folder, pressed ? styles.pressed : null]}
     >
       <View style={[styles.tab, { backgroundColor: subject.color }]} />
-      <Surface r={radius.md} depth={offsets.md} faceStyle={styles.face}>
+      <Surface
+        r={radius.md}
+        depth={offsets.md}
+        style={styles.surface}
+        faceStyle={styles.face}
+      >
         <View style={styles.body}>
           <View style={styles.top}>
             <IconTile
@@ -86,8 +91,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
     borderColor: border.color,
   },
-  face: { marginTop: -2 },
-  body: { padding: spacing.lg, minHeight: 146 },
+  // Two cards share a row, and the row stretches both to the taller one. The
+  // surface and face have to take that height or the shorter card's outline
+  // stops early -- which left the divider and the counts along the foot at
+  // different heights whenever one subject's name wrapped to two lines.
+  surface: { flex: 1 },
+  face: { marginTop: -2, flex: 1 },
+  body: { padding: spacing.lg, minHeight: 146, flex: 1 },
   top: {
     flexDirection: 'row',
     alignItems: 'flex-start',

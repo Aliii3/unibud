@@ -1,6 +1,6 @@
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { createDeadline, setDeadlineReminder } from '@/db/deadlines';
 import { DEFAULTS, getNumberSetting, KEYS } from '@/db/settings';
@@ -88,10 +88,13 @@ export function AddDeadlineForm({
 
       <Field autoFocus value={title} onChangeText={setTitle} placeholder="What is due?" />
 
-      <View style={styles.row}>
+      {/* Three fixed labels, so an equal share each rather than three
+          content-width chips leaving a gap at the end of the row. */}
+      <View style={styles.kindRow}>
         {KINDS.map((k) => (
           <Chip
             key={k}
+            fill
             label={k}
             selected={kind === k}
             onPress={() => setKind(k)}
@@ -101,7 +104,13 @@ export function AddDeadlineForm({
       </View>
 
       {subjectId == null ? (
-        <View style={styles.row}>
+        // Subject names are any length, so one scrolling line beats either
+        // truncating them to equal widths or wrapping into ragged rows.
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipScroll}
+        >
           {subjects.map((s) => (
             <Chip
               key={s.id}
@@ -111,7 +120,7 @@ export function AddDeadlineForm({
               onPress={() => setChosen(s.id)}
             />
           ))}
-        </View>
+        </ScrollView>
       ) : null}
 
       <Field
@@ -150,7 +159,8 @@ const styles = StyleSheet.create({
     borderColor: border.color,
   },
   heading: { fontSize: 17, fontWeight: '800', color: colors.ink, letterSpacing: -0.3 },
-  row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
+  kindRow: { flexDirection: 'row', gap: spacing.xs },
+  chipScroll: { flexDirection: 'row', gap: spacing.xs, paddingRight: spacing.xs },
   hint: { fontSize: 12, color: colors.warning, fontWeight: '600' },
   actions: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs },
   action: { flex: 1, minWidth: 0 },

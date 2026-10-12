@@ -477,6 +477,73 @@ skip('document upload and chapter division',
 skip('notification delivery (daily prompt, deadline reminders)',
   'expo-notifications does not schedule on web; needs a device or dev build');
 
+// ---------------------------------------------------------------- alignment
+// These three were all real, and all the kind of thing that comes back
+// silently: nothing throws, the screen just looks slightly wrong.
+await check('outer surfaces sit on symmetric gutters', async () => {
+  await page.goto(`${BASE}/deadlines`, { waitUntil: 'domcontentloaded', timeout: T });
+  await seen('and when.');
+  await page.waitForTimeout(700);
+  const g = await page.evaluate(() => {
+    const vw = document.documentElement.clientWidth;
+    const lefts = new Set(), rights = new Set();
+    for (const el of document.querySelectorAll('div')) {
+      const r = el.getBoundingClientRect();
+      if (r.width < 120 || r.height < 20) continue;
+      const l = Math.round(r.left), rr = Math.round(vw - r.right);
+      if (l > 0 && l < 40) lefts.add(l);
+      if (rr > 0 && rr < 40) rights.add(rr);
+    }
+    return { left: Math.min(...lefts), right: Math.min(...rights) };
+  });
+  // The shadow used to overhang its box, which measured as 16 against 11.
+  if (g.left !== g.right) {
+    throw new Error(`gutters differ: ${g.left}px left vs ${g.right}px right`);
+  }
+});
+
+await check('selecting a chip does not resize it', async () => {
+  await page.goto(`${BASE}/schedule`, { waitUntil: 'domcontentloaded', timeout: T });
+  await visible('text=Add class');
+  await page.waitForTimeout(600);
+  // A subject chip, deliberately: the weekday chips take an equal share of
+  // their row, so their width cannot react to the label at all and they
+  // would pass this whatever the label did. A content-width chip is where a
+  // heavier selected font, or a depth that only appears once selected, shows
+  // up as the row shifting under your finger.
+  // It has to be a chip that starts out unselected -- the screen preselects
+  // the first subject, so measuring that one measures a no-op.
+  const chip = page.getByRole('button', { name: 'Microeconomics', exact: true }).first();
+  const selectedAtStart = await chip.getAttribute('aria-selected');
+  if (selectedAtStart === 'true') throw new Error('expected this chip to start unselected');
+  const before = await chip.boundingBox();
+  await chip.click();
+  await page.waitForTimeout(400);
+  const after = await chip.boundingBox();
+  if (Math.abs(before.width - after.width) > 0.5 || Math.abs(before.height - after.height) > 0.5) {
+    throw new Error(
+      `chip resized on selection: ${before.width}x${before.height} -> ${after.width}x${after.height}`
+    );
+  }
+});
+
+await check('the seven day chips share one even row', async () => {
+  const boxes = await page.evaluate(() =>
+    ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => {
+      const el = [...document.querySelectorAll('[role="button"]')]
+        .find((e) => e.getAttribute('aria-label') === d || e.textContent.trim() === d);
+      const r = el.getBoundingClientRect();
+      return { d, top: Math.round(r.top), w: Math.round(r.width) };
+    })
+  );
+  const tops = new Set(boxes.map((b) => b.top));
+  if (tops.size !== 1) throw new Error(`days wrap across ${tops.size} rows: ${JSON.stringify(boxes)}`);
+  const widths = new Set(boxes.map((b) => b.w));
+  if (widths.size > 2) {
+    throw new Error(`day chips are unevenly wide: ${[...widths].join(', ')}`);
+  }
+});
+
 // ---------------------------------------------------------------- report
 const pass = results.filter((r) => r.status === 'PASS').length;
 const fail = results.filter((r) => r.status === 'FAIL');

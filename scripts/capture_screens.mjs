@@ -40,7 +40,14 @@ await field.waitFor({ state: 'visible', timeout: T });
 // A fresh database shows the first-run walkthrough over everything, which
 // would be the only thing in every shot. Step to the end and close it.
 const tour = page.getByText('A folder for every subject').first();
-if (await tour.isVisible({ timeout: 5000 }).catch(() => false)) {
+// `isVisible` evaluates immediately -- its timeout option does not wait -- and
+// the modal renders a tick after the field, once the settings read resolves.
+// Checking too early reported no tour, and then it swallowed every click.
+const tourUp = await tour
+  .waitFor({ state: 'visible', timeout: 10000 })
+  .then(() => true)
+  .catch(() => false);
+if (tourUp) {
   for (let i = 0; i < 5; i += 1) {
     await page.getByText('Next', { exact: true }).click();
     await page.waitForTimeout(180);

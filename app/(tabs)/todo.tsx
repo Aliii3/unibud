@@ -68,7 +68,15 @@ export default function TodoScreen() {
               returnKeyType="done"
               onSubmitEditing={onAdd}
             />
-            <View style={styles.chips}>
+            {/* Subject names vary from "Maths" to "Introduction to Organic
+                Chemistry", so equal widths would truncate the long ones and
+                content widths wrap into ragged rows. One scrolling line avoids
+                both. */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.chipScroll}
+            >
               {subjects.map((s) => (
                 <Chip
                   key={s.id}
@@ -78,7 +86,7 @@ export default function TodoScreen() {
                   onPress={() => setSubjectId(s.id)}
                 />
               ))}
-            </View>
+            </ScrollView>
             <Button label="Add task" icon="add" onPress={onAdd} disabled={!title.trim()} />
           </View>
         ) : null}
@@ -187,7 +195,7 @@ const styles = StyleSheet.create({
     borderWidth: border.width,
     borderColor: border.color,
   },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
+  chipScroll: { flexDirection: 'row', gap: spacing.xs, paddingRight: spacing.xs },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   rowBody: { flex: 1, minWidth: 0 },
   rowTitle: { fontSize: 15, fontWeight: '600', color: colors.ink },

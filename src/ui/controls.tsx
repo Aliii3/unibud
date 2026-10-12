@@ -53,7 +53,15 @@ export function Button({
       onPress={onPress}
       style={({ pressed }) => (pressed ? styles.pressed : null)}
     >
-      <Surface fill={fill} r={radius.md} depth={disabled ? 0 : offsets.sm}>
+      {/* Depth stays put and the shadow is hidden instead. Since a surface
+          reserves room for its own shadow, dropping depth to 0 would shrink
+          the button by 3pt the moment it became disabled. */}
+      <Surface
+        fill={fill}
+        r={radius.md}
+        depth={offsets.sm}
+        shadowColor={disabled ? 'transparent' : colors.ink}
+      >
         <View style={styles.button}>
           {icon ? <Ionicons name={icon} size={18} color={tint} /> : null}
           <Text style={[styles.buttonLabel, { color: tint }]}>{label}</Text>
@@ -95,30 +103,50 @@ export function Chip({
   onPress,
   color = colors.ink,
   role = 'button',
+  fill: equalWidth,
 }: {
   label: string;
   selected: boolean;
   onPress: () => void;
   color?: string;
   role?: 'button' | 'tab';
+  /**
+   * Take an equal share of the row. For a row of a known, fixed size — the
+   * seven weekdays, the three deadline kinds — where content-width chips
+   * wrap into ragged rows.
+   */
+  fill?: boolean;
 }) {
   return (
     <Pressable
       accessibilityRole={role}
       accessibilityState={{ selected }}
       onPress={onPress}
-      style={({ pressed }) => (pressed ? styles.pressed : null)}
+      style={({ pressed }) => [
+        equalWidth ? styles.chipFlex : null,
+        pressed ? styles.pressed : null,
+      ]}
     >
+      {/* Depth is constant and the shadow hidden when unselected: a surface
+          reserves room for its shadow, so toggling depth would resize the
+          chip on selection -- the reflow this component already avoids by
+          keeping its font weight fixed. */}
       <Surface
         fill={selected ? color : colors.surface}
         r={radius.sm}
-        depth={selected ? offsets.sm : 0}
+        depth={offsets.sm}
+        shadowColor={selected ? colors.ink : 'transparent'}
       >
-        <View style={styles.chip}>
+        <View style={[styles.chip, equalWidth ? styles.chipEqual : null]}>
           <Text
             style={[
               styles.chipLabel,
-              selected ? { color: onSubject(color), fontWeight: '800' } : null,
+              equalWidth ? styles.chipLabelEqual : null,
+              // Colour and fill carry the selection. Weight used to as well,
+              // 700 to 800, which made the label wider -- so tapping a chip
+              // re-laid out the whole row under your finger. Worst on the
+              // schedule's seven day chips, where it shifted all of them.
+              selected ? { color: onSubject(color) } : null,
             ]}
             numberOfLines={1}
           >
@@ -177,7 +205,8 @@ export function AddRow({
         <Surface
           fill={disabled ? pale(colors.lime) : colors.lime}
           r={radius.md}
-          depth={disabled ? 0 : offsets.sm}
+          depth={offsets.sm}
+          shadowColor={disabled ? 'transparent' : colors.ink}
         >
           <View style={styles.addButton}>
             <Ionicons name={icon} size={26} color={colors.ink} />
@@ -250,6 +279,11 @@ const styles = StyleSheet.create({
   },
 
   chip: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm + 2, maxWidth: 170 },
+  chipFlex: { flex: 1, minWidth: 0 },
+  // Seven of these share a row at 390pt, so the generous side padding has to
+  // go; the label centres in whatever width the row gives it instead.
+  chipEqual: { paddingHorizontal: spacing.xs, maxWidth: undefined },
+  chipLabelEqual: { textAlign: 'center' },
   chipLabel: { fontSize: 13, color: colors.muted, fontWeight: '700' },
 
   addRow: {
