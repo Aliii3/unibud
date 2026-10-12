@@ -6,10 +6,12 @@
   "scripts": {
     "android": "expo start --android",
     "build:android": "npm run check:routes && npx eas-cli build --platform android --profile production",
+    "build:device": "npm run check:routes && npx eas-cli build --platform ios --profile device",
     "build:ios": "npm run check:routes && npx eas-cli build --platform ios --profile production",
     "build:preview": "npm run check:routes && npx eas-cli build --platform all --profile preview",
     "check:listing": "python3 scripts/check_listing.py",
     "check:routes": "node tests/routes.test.mjs",
+    "dev": "expo start --dev-client",
     "icons": "python3 scripts/build_icons.py",
     "ios": "expo start --ios",
     "native:ios": "expo prebuild --platform ios --clean",

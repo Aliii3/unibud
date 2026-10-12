@@ -149,6 +149,38 @@ the privacy questionnaire — which for Unibud is "no data collected", since
 everything is stored on the device and nothing is sent anywhere. A build
 must have run through `eas build` before `eas submit` has anything to send.
 
+### Iterating without a TestFlight build each time
+
+A production build to TestFlight takes 20 minutes and a processing wait,
+which is a poor loop for a one-line change. `npm run build:device` makes a
+**development build** — the same native binary, with the JS loaded from your
+machine instead of baked in:
+
+```bash
+npx eas-cli device:create       # register the iPhone, once
+npm run build:device            # install from the link EAS prints
+npm run dev                     # serves the JS; shake to reload
+```
+
+After that, a JS change shows on the phone in seconds. Unlike Expo Go the
+native modules are really there, so `expo-calendar` and `expo-notifications`
+behave as they will in the shipped app — which Expo Go cannot tell you,
+because it stubs the calendar module.
+
+A new TestFlight build is still needed whenever anything **native** changes:
+a new package with native code, or any `app.json` key that lands in
+`Info.plist`. Changing JS alone against the wrong binary is worse than not
+shipping it — requesting write-only calendar access from a build whose
+`Info.plist` has no write-only usage description is a hard crash, not an
+error.
+
+**`expo-updates` is deliberately not installed.** It would let a JS change
+reach the installed app over the air, and it would also make the app contact
+a server on launch. The App Store description, the privacy policy and the
+answers given to App Review all say there are no network requests of any
+kind and that the app works in airplane mode. Over-the-air updates would
+make all three false, to save a 20-minute build.
+
 ### Building locally in Xcode instead
 
 EAS compiles on Expo's machines, so a build needs their service to be

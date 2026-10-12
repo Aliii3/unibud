@@ -28,6 +28,17 @@
       "ios": {
         "resourceClass": "m-medium"
       }
+    },
+    "device": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": false,
+        "resourceClass": "m-medium"
+      },
+      "android": {
+        "buildType": "apk"
+      }
     }
   },
   "submit": {
