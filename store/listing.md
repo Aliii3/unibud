@@ -71,7 +71,7 @@ There is no sign-up, because there is nothing to sign up to. Unibud stores every
 Built for students who want their term organised, not gamified.
 ```
 
-## What's New — 1.0.0 (4000)
+## What's New — 1.0.1 (4000)
 
 ```
 First release.

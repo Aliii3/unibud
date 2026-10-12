@@ -103,8 +103,16 @@ npm run spec         # regenerate spec/unibud-concept-spec.pdf
 ### Version numbers
 
 `appVersionSource` is `"local"`, so **`app.json` is the single source of
-truth** for `expo.version` (the marketing version, currently `1.0.0`) and
+truth** for `expo.version` (the marketing version, currently `1.0.1`) and
 `expo.ios.buildNumber`.
+
+**A rejected submission consumes its version number.** 1.0.0 was submitted,
+rejected under Guideline 2.1, and App Store Connect then refused every
+further upload with "90186: Invalid Pre-Release Train. The train version
+'1.0.0' is closed for new build submissions" and "90062: ...must contain a
+higher version than the previously approved version [1.0.0]". No build
+number will get past that -- the marketing version itself has to go up,
+which is why this is 1.0.1 with 1.0.0 never having shipped.
 
 It was `"remote"`, with EAS keeping its own counter, which works right up
 until something other than EAS uploads a build. Xcode then writes whatever

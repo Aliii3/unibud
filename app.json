@@ -2,7 +2,7 @@
   "expo": {
     "name": "Unibud",
     "slug": "unibud",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "scheme": "unibud",
     "icon": "./assets/icon.png",
@@ -13,7 +13,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "3"
+      "buildNumber": "4"
     },
     "android": {
       "package": "com.unibud.app",
