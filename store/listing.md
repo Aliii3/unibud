@@ -74,11 +74,13 @@ Built for students who want their term organised, not gamified.
 ## What's New — 1.0.1 (4000)
 
 ```
-First release.
+A walkthrough on first launch, so the app explains itself instead of opening empty. You can replay it any time from Settings.
 
-Subjects as folders, with documents, tasks and deadlines inside each one. A weekly timetable. Reminders before anything is due, and a daily check-in so nothing is remembered too late. A walkthrough on first launch, and a one-tap way to put any deadline in your Calendar or Reminders.
+Any deadline or reminder can now be added to your iPhone's Calendar or Reminders with one tap. It hands over one copy when you ask it to — nothing is exported on its own, and nothing is sent anywhere else.
 
-Everything stays on your device. No account, no sync, no tracking.
+Home has moved to the left of the tab bar, where your thumb already is. Margins are even throughout, and the tab bar no longer shifts under your finger when you tap it.
+
+Still no account, still no sync, still nothing leaving your device unless you add it to your calendar yourself.
 ```
 
 ---
