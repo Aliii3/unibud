@@ -29,14 +29,24 @@ function check(name, fn) {
   }
 }
 
-/** Every route file, as paths relative to `app/`. */
+/**
+ * Every route file, as paths relative to `app/`.
+ *
+ * Only what expo-router actually routes. The first version of this listed
+ * every file and failed on `app/.DS_Store`, which is Finder metadata and
+ * was never a route -- a false alarm is worse than no check, because the
+ * next real one gets waved through.
+ */
+const ROUTE_EXT = /\.[jt]sx?$/;
+
 function routeFiles(dir = 'app', prefix = '') {
   const out = [];
   for (const entry of readdirSync(dir)) {
+    if (entry.startsWith('.')) continue;
     const full = join(dir, entry);
     if (statSync(full).isDirectory()) {
       out.push(...routeFiles(full, `${prefix}${entry}/`));
-    } else {
+    } else if (ROUTE_EXT.test(entry)) {
       out.push(`${prefix}${entry}`);
     }
   }
@@ -86,6 +96,7 @@ check('no sync-conflict or editor copies anywhere in the source', () => {
         continue;
       }
       const full = join(dir, entry);
+      if (entry.startsWith('.')) continue;
       if (statSync(full).isDirectory()) walk(full);
       // " 2.tsx" from iCloud, "copy" from Finder, " (1)" from a browser.
       else if (/ \d+\.|\bcopy\b|copy\.| \(\d+\)/i.test(entry)) suspects.push(full);
