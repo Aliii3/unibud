@@ -53,7 +53,7 @@ page.on('pageerror', (e) => consoleErrors.push('PAGEERROR: ' + e.message));
  * check never settles on, though a real pointer event works fine. Clicking
  * the element's centre by coordinate is what a finger does anyway.
  */
-const TAB_ORDER = ['Doc', 'Todo', 'Deadline', 'Home'];
+const TAB_ORDER = ['Home', 'Deadline', 'Todo', 'Doc'];
 const tapTab = async (name) => {
   // The bottom tabs are anchors inside role="tablist". Their accessible name
   // does not match their label cleanly, and Playwright's actionability check
@@ -164,9 +164,9 @@ await check('every tab reaches its screen', async () => {
   // Markers must be unique to their screen: Home and Doc both open with
   // "Save now.", so the second line is what distinguishes them.
   const tabs = [
-    ['Doc', 'Revise later.'],
-    ['Todo', 'on your plate.'],
     ['Deadline', 'and when.'],
+    ['Todo', 'on your plate.'],
+    ['Doc', 'Revise later.'],
     ['Home', 'Find anytime.'],
   ];
   for (const [tab, marker] of tabs) {
@@ -367,7 +367,9 @@ await check('an unreachable calendar reports why instead of crashing', async () 
   await page.getByText('Add to calendar', { exact: true }).first().click();
   await page.waitForTimeout(1800);
   const body = await page.locator('body').innerText();
-  if (!/Could not reach the calendar|needs permission|No calendar on this device/i.test(body)) {
+  // Each step has its own message and code, so assert on the shape rather
+  // than one sentence: web has no expo-calendar at all, which is E1.
+  if (!/\((E[1-5])\)/.test(body)) {
     throw new Error('no reason shown after a failed export');
   }
   // A failure keeps the panel open so the reason can be read.

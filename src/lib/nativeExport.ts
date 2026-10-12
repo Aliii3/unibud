@@ -28,37 +28,61 @@ const BLOCK_MS = 30 * 60 * 1000;
 async function writableCalendar(
   entity: Calendar.EntityTypes
 ): Promise<{ id: string } | { error: string }> {
+  const reminders = entity === Calendar.EntityTypes.REMINDER;
+  const what = reminders ? 'Reminders' : 'your calendar';
+
+  if (reminders && Platform.OS !== 'ios') {
+    return { error: 'Reminders is an iOS app. Try Add to calendar instead.' };
+  }
+
+  // Each step gets its own guard, and each failure its own message. One
+  // try/catch around the lot reported "could not reach the calendar" for
+  // four unrelated causes, which is what it said on a device with a working
+  // calendar -- true, useless, and impossible to act on. The codes are here
+  // so a screenshot says which step failed; there is no crash reporting and
+  // no way to read someone else's device.
+  let status: string;
   try {
-    if (entity === Calendar.EntityTypes.REMINDER && Platform.OS !== 'ios') {
-      return { error: 'Reminders is an iOS app. Try Add to calendar instead.' };
-    }
+    const permission = reminders
+      ? await Calendar.requestRemindersPermissionsAsync()
+      : await Calendar.requestCalendarPermissionsAsync();
+    status = permission.status;
+  } catch {
+    return { error: `${what} is not available in this build. (E1)` };
+  }
+  if (status !== 'granted') {
+    return {
+      error: `Unibud needs permission to add to ${what}. Enable it in system settings. (E2)`,
+    };
+  }
 
-    const permission =
-      entity === Calendar.EntityTypes.REMINDER
-        ? await Calendar.requestRemindersPermissionsAsync()
-        : await Calendar.requestCalendarPermissionsAsync();
-    if (permission.status !== 'granted') {
-      return {
-        error:
-          entity === Calendar.EntityTypes.REMINDER
-            ? 'Unibud needs permission to add to Reminders. Enable it in system settings.'
-            : 'Unibud needs permission to add to your calendar. Enable it in system settings.',
-      };
+  // The default-calendar shortcut is for events only. It returns the default
+  // *event* calendar, so using it for a reminder handed `createReminderAsync`
+  // an events calendar -- which is why Add to Reminders could never work.
+  // It is also allowed to fail: a device with no default calendar throws
+  // here, and the list below still has an answer.
+  if (Platform.OS === 'ios' && !reminders) {
+    try {
+      const preferred = await Calendar.getDefaultCalendarAsync();
+      if (preferred?.id && preferred.allowsModifications !== false) {
+        return { id: preferred.id };
+      }
+    } catch {
+      // fall through to the list
     }
+  }
 
-    // iOS has a default calendar for each entity type. Android has no
-    // default and no Reminders at all, so pick the first calendar that
-    // actually allows writing.
-    if (Platform.OS === 'ios') {
-      const fallback = await Calendar.getDefaultCalendarAsync();
-      if (fallback?.id) return { id: fallback.id };
-    }
+  try {
     const all = await Calendar.getCalendarsAsync(entity);
     const writable = all.find((c) => c.allowsModifications);
-    if (!writable) return { error: 'No calendar on this device accepts new entries.' };
-    return { id: writable.id };
+    if (writable) return { id: writable.id };
+    return {
+      error: all.length
+        ? `None of the ${all.length} ${reminders ? 'Reminders lists' : 'calendars'} on this device accept new entries. (E3)`
+        : `There are no ${reminders ? 'Reminders lists' : 'calendars'} set up on this device yet. (E4)`,
+    };
   } catch {
-    return { error: 'Could not reach the calendar on this device.' };
+    return { error: `Could not read ${what} on this device. (E5)` };
   }
 }
 

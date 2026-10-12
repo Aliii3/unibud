@@ -425,10 +425,13 @@ Deliberately not built yet:
 
 Two deviations from the notes worth knowing about:
 
-- The tab bar is ordered `doc | todo | deadline | home`, as drawn. Home is
-  still the tab a cold launch lands on — `unstable_settings.initialRouteName`
-  in `app/(tabs)/_layout.tsx` pins that, since an empty Doc list is a poor
-  first screen. Tab order follows the order the `<Tabs.Screen>` entries are
-  declared in.
+- The tab bar is ordered `home | deadline | todo | doc`, which is the drawn
+  order reversed. It was built as drawn and then flipped: a home tab the
+  thumb has to cross the whole bar to reach is the wrong trade when it is
+  where every other screen is reached from. Home is also the tab a cold
+  launch lands on, pinned by `unstable_settings.initialRouteName` in
+  `app/(tabs)/_layout.tsx`. Order follows the order the `<Tabs.Screen>`
+  entries are declared in, and `tests/smoke.mjs` finds tabs positionally, so
+  its `TAB_ORDER` has to match.
 - Inside a subject, the three subject-scoped sections are a segmented control
   rather than a second tab bar, so the app-level tabs stay reachable.
