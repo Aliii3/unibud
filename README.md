@@ -316,6 +316,33 @@ Anything that drives the app from a fresh database has to get past it:
 clicks, and `scripts/capture_screens.mjs` dismisses it so it is not the only
 thing in every store screenshot.
 
+### Calendar and Reminders export
+
+Each deadline and reminder row carries a button that hands one copy of that
+entry to the system Calendar or Reminders app, via `expo-calendar`.
+
+It is per item and on request. Automatic mirroring was the alternative and
+is a worse deal: duplicate events, entries orphaned when someone edits the
+calendar side, and a half-synced calendar that is less trustworthy than an
+unsynced one. "Add" is the honest verb — a copy goes over and the two stop
+being related.
+
+`src/lib/nativeExport.ts` holds the writes and **nothing in it throws**.
+These run from a row in a list, so a rejected promise would take the whole
+screen down over a calendar the user may not even have; every failure comes
+back as a message to show instead. Android has no Reminders app and no
+default calendar, so it falls back to the first calendar that allows
+modification and says so when there is none.
+
+The control is two buttons in the row rather than a native action sheet,
+because `Alert.alert` is a no-op on react-native-web — a dialog would put
+the whole feature beyond the smoke suite, which this project has already
+been caught by twice.
+
+This is the only feature that can move data off the device, and only if the
+user's calendar syncs. `docs/privacy.md` says so in its own section rather
+than leaving "nothing leaves your phone" standing unqualified.
+
 ### Notifications
 
 Two kinds, both local — nothing is sent to a server:
@@ -328,8 +355,8 @@ Two kinds, both local — nothing is sent to a server:
 ## State of the build
 
 Working: subjects, weekly schedule, deadlines and quizzes with reminders,
-to-dos, document upload, manual chapter division, the daily check-in, and
-the first-run walkthrough.
+to-dos, document upload, manual chapter division, the daily check-in, the
+first-run walkthrough, and per-item export to Calendar and Reminders.
 
 Deliberately not built yet:
 

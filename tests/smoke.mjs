@@ -333,6 +333,61 @@ await check('a reminder can be deleted', async () => {
   await gone('Collect transcript');
 });
 
+// ------------------------------------------------- calendar / reminders export
+await check('a deadline offers to go in the calendar', async () => {
+  // The deadline section deletes everything it made, so this adds its own
+  // rather than depending on what an earlier check happened to leave behind.
+  await page.goto(`${BASE}/deadlines`, { waitUntil: 'domcontentloaded', timeout: T });
+  await visible('text=Add deadline');
+  await page.getByText('Add deadline').click();
+  await page.getByPlaceholder('What is due?').fill('Lab safety quiz');
+  await page.getByRole('button', { name: 'quiz', exact: true }).first().click();
+  await page.getByRole('button', { name: 'Linear Algebra', exact: true }).first().click();
+  await page.getByPlaceholder(/Due date/).fill(FUTURE);
+  await page.getByText('Save', { exact: true }).click();
+  await seen('Lab safety quiz');
+  await page.waitForTimeout(500);
+  await page
+    .getByRole('button', { name: 'Add Lab safety quiz to calendar' })
+    .first()
+    .waitFor({ timeout: T });
+});
+
+await check('the export panel offers both destinations', async () => {
+  await page.getByRole('button', { name: 'Add Lab safety quiz to calendar' }).first().click();
+  await page.waitForTimeout(500);
+  await seen('Add to calendar');
+  await seen('Add to Reminders');
+});
+
+await check('an unreachable calendar reports why instead of crashing', async () => {
+  // There is no calendar behind react-native-web, which is the point: the
+  // helpers are written never to throw, because these run from a row in a
+  // list and a rejected promise would take the screen down.
+  await page.getByText('Add to calendar', { exact: true }).first().click();
+  await page.waitForTimeout(1800);
+  const body = await page.locator('body').innerText();
+  if (!/Could not reach the calendar|needs permission|No calendar on this device/i.test(body)) {
+    throw new Error('no reason shown after a failed export');
+  }
+  // A failure keeps the panel open so the reason can be read.
+  await seen('Add to Reminders');
+});
+
+await check('the export panel closes again', async () => {
+  await page
+    .getByRole('button', { name: 'Hide export options for Lab safety quiz' })
+    .first()
+    .click();
+  await page.waitForTimeout(500);
+  await gone('Add to Reminders', 10000);
+});
+
+skip(
+  'writing a deadline into the system Calendar and Reminders',
+  'expo-calendar has no web implementation, and the write needs a real calendar plus a permission grant; needs a device'
+);
+
 // ---------------------------------------------------------------- todos
 await check('global todo can be added', async () => {
   await page.goto(`${BASE}/todo`, { waitUntil: 'domcontentloaded', timeout: T });

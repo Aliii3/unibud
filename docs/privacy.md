@@ -1,12 +1,17 @@
 # Unibud — Privacy Policy
 
-**Last updated: 21 September 2026**
+**Last updated: 12 October 2026**
 
 ## The short version
 
 Unibud does not collect anything. There is no account, no server, and no
 analytics. Everything you put into the app stays in a database on your
 device, and the app makes no network requests at all.
+
+The one exception is something you have to ask for: tapping "Add to
+calendar" or "Add to Reminders" on a deadline hands a copy of that one
+entry to Apple's Calendar or Reminders app. What happens to it then is up
+to how your calendar is set up — see Permissions below.
 
 ## What we collect
 
@@ -33,7 +38,8 @@ under their own privacy policies, not by us.
 
 ## Permissions
 
-Unibud asks for two things, and only when you use the feature that needs it.
+Unibud asks for three things, and only when you use the feature that needs
+it.
 
 **Notifications** — so it can send the daily check-in and remind you before
 a deadline. These are *local* notifications, scheduled by the app on your
@@ -43,6 +49,24 @@ simply means no reminders; the rest of the app works normally.
 **Files** — when you attach a document, the system file picker opens.
 Unibud only receives the specific file you choose. It cannot browse your
 storage.
+
+**Calendar and Reminders** — only if you tap "Add to calendar" or "Add to
+Reminders" on a deadline. Nothing is exported automatically and nothing is
+kept in step afterwards: a copy is handed over once, and the two stop being
+related.
+
+Be aware of what that means. Unibud keeps your coursework on your device,
+but a calendar usually does not stay there — if yours syncs to iCloud, a
+Google account or anything else, the entry you added will travel with it,
+under that provider's privacy policy rather than this one. That is the
+system calendar working as intended, and it is outside what Unibud can see
+or control. If you would rather nothing left the device at all, do not use
+these two buttons; everything else in the app works without them.
+
+iOS grants calendar access as a single permission. Unibud uses it to read
+the list of your calendars, so it knows where to put the entry, and to add
+the entry you asked for. It does not read your existing events, and it never
+changes or deletes anything already in your calendar.
 
 ## Third parties
 

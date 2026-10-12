@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AddDeadlineForm } from '@/features/deadlines/AddDeadlineForm';
 import { AddReminderForm } from '@/features/reminders/AddReminderForm';
+import { useExportActions } from '@/features/export/useExportActions';
 import {
   Button,
   Card,
@@ -204,6 +205,11 @@ function DeadlineRow({
   onDelete: () => void;
 }) {
   const late = isOverdue(deadline.due_at);
+  const exporter = useExportActions({
+    title: deadline.title,
+    dueAt: deadline.due_at,
+    notes: `${deadline.subject_name} · ${deadline.kind} · added from Unibud`,
+  });
   return (
     <Card accent={late ? colors.danger : deadline.subject_color}>
       <View style={styles.row}>
@@ -228,6 +234,7 @@ function DeadlineRow({
             </Text>
           </View>
         </View>
+        {exporter.trigger}
         <IconButton
           icon="trash-outline"
           label={`Delete ${deadline.title}`}
@@ -235,6 +242,7 @@ function DeadlineRow({
           onPress={onDelete}
         />
       </View>
+      {exporter.panel}
     </Card>
   );
 }
@@ -250,6 +258,11 @@ function ReminderRow({
   onDelete: () => void;
 }) {
   const late = isOverdue(reminder.due_at);
+  const exporter = useExportActions({
+    title: reminder.title,
+    dueAt: reminder.due_at,
+    notes: 'Reminder · added from Unibud',
+  });
   return (
     <Card accent={late ? colors.danger : colors.ink}>
       <View style={styles.row}>
@@ -269,6 +282,7 @@ function ReminderRow({
             </Text>
           </View>
         </View>
+        {exporter.trigger}
         <IconButton
           icon="trash-outline"
           label={`Delete ${reminder.title}`}
@@ -276,6 +290,7 @@ function ReminderRow({
           onPress={onDelete}
         />
       </View>
+      {exporter.panel}
     </Card>
   );
 }

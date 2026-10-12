@@ -32,6 +32,14 @@ local SQLite database on the device via expo-sqlite. No analytics, no ads,
 no tracking, no third-party SDKs, no authentication, no payments, no AI
 services. The app works fully in airplane mode.
 
+CALENDAR AND REMINDERS
+Each deadline has an "Add to calendar" and an "Add to Reminders" button.
+Tapping one writes that single entry to the system Calendar or Reminders
+app via expo-calendar, after the standard permission prompt. Nothing is
+exported automatically, nothing is read from existing events, and nothing
+is kept in sync afterwards. These are on-device system apps, not a network
+service.
+
 NOTIFICATIONS
 Local only, scheduled on-device with expo-notifications. There is no push
 server and no remote notification capability.
@@ -112,7 +120,8 @@ there is some. To reach every feature:
    documents, and to attach a file from the device.
 3. **Deadlines tab** — add an assignment, quiz or exam with a due date, and
    optionally a reminder a set number of hours ahead. Standalone reminders,
-   which belong to no subject, are added here too.
+   which belong to no subject, are added here too. The calendar icon on any
+   row opens "Add to calendar" and "Add to Reminders".
 4. **Todo tab** — add tasks and assign them to a subject.
 5. **Docs tab** — attach a file from the device and list chapters against it.
    Note that documents are stored and listed but not opened for reading;
@@ -137,6 +146,7 @@ Everything it uses is an on-device framework:
 | expo-sqlite | the local database holding all user data | No |
 | expo-notifications | scheduling local notifications on-device | No |
 | expo-document-picker | letting the user pick a file from their device | No |
+| expo-calendar | adding one entry to Calendar or Reminders, on request | Only if the user's own calendar syncs |
 | expo-file-system | storing that file in the app's own sandbox | No |
 | expo-router, react-native-* | navigation and UI | No |
 
@@ -147,6 +157,13 @@ there is no over-the-air update mechanism.
 
 The app functions fully with airplane mode enabled, which is the simplest
 way to verify all of the above.
+
+The one qualification worth stating plainly: if the reviewer taps "Add to
+calendar" on a deadline and their calendar is an iCloud calendar, that
+single entry will sync as any calendar entry does. That is the system
+calendar behaving normally rather than Unibud transmitting anything, it
+happens only on an explicit tap, and the privacy policy says so in its
+Permissions section.
 
 ### 5. Regional differences
 
@@ -184,7 +201,8 @@ read it:
 3. Type a subject name, add it. Add two more.
 4. Tap into a subject — show its deadlines, tasks and documents
 5. Attach a document: tap upload, pick a file, show it appear in the list
-6. Deadlines tab: add a deadline with a due date and a reminder
+6. Deadlines tab: add a deadline with a due date, then tap its calendar
+   button and add it to Calendar, accepting the permission prompt
 7. Add a standalone reminder, to show it works without a subject
 8. Todo tab: add a task against a subject, tick it off
 9. Schedule: add a class, show the weekly timetable

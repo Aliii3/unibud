@@ -59,6 +59,9 @@ Add a task to a subject and it shows up both places: on the subject and in one c
 A DAILY CHECK-IN
 One notification a day, at a time you set. Answer it in a few seconds and nothing gets remembered at the last minute.
 
+IN YOUR CALENDAR, IF YOU WANT IT THERE
+Any deadline can be added to your iPhone's Calendar or Reminders with one tap. Nothing is sent anywhere unless you ask for it.
+
 YOUR FILES, FILED
 Attach lecture notes and slides to the subject they belong to, and keep a list of the chapters you are revising against each one.
 
@@ -73,7 +76,7 @@ Built for students who want their term organised, not gamified.
 ```
 First release.
 
-Subjects as folders, with documents, tasks and deadlines inside each one. A weekly timetable. Reminders before anything is due, and a daily check-in so nothing is remembered too late.
+Subjects as folders, with documents, tasks and deadlines inside each one. A weekly timetable. Reminders before anything is due, and a daily check-in so nothing is remembered too late. A walkthrough on first launch, and a one-tap way to put any deadline in your Calendar or Reminders.
 
 Everything stays on your device. No account, no sync, no tracking.
 ```

@@ -50,6 +50,13 @@
           },
           "imageWidth": 200
         }
+      ],
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "Unibud adds a deadline to your calendar only when you tap \"Add to calendar\" on it.",
+          "remindersPermission": "Unibud adds a deadline to Reminders only when you tap \"Add to Reminders\" on it."
+        }
       ]
     ],
     "experiments": {
