@@ -160,6 +160,27 @@ Then in Xcode: pick **Any iOS Device (arm64)**, set the team under
 never hand-edit anything inside it — `--clean` throws it away each run. A
 native change belongs in `app.json` or a config plugin.
 
+Two things `prebuild` does that are easy to miss:
+
+- It **rewrites the `ios` and `android` npm scripts** to `expo run:*`, which
+  builds natively instead of starting the dev server. That is wrong for the
+  Expo Go workflow this project uses day to day, so check `git diff
+  package.json` afterwards and put them back.
+- The **build number comes from `app.json`**, not from Xcode. `prebuild`
+  writes `expo.ios.buildNumber` into `CFBundleVersion` and Xcode archives
+  whatever it finds there, so bump it in `app.json` — or in Xcode's *Build*
+  field before archiving — past every number already uploaded for this
+  `expo.version`.
+
+A dry run of the generated project is worth doing after any change to
+`app.json` or the plugin list, since a plugin that fails to apply only shows
+up here:
+
+```bash
+npx expo prebuild --platform ios --no-install --clean
+grep -A1 UsageDescription ios/*/Info.plist
+```
+
 The simpler route when EAS is reachable is still `npm run build:ios` and
 `npm run submit:ios`: no Xcode, no certificates to manage, and no 300MB
 `.ipa` to move around. The local path is the fallback, not the default.
