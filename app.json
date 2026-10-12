@@ -11,7 +11,8 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.unibud.app",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCalendarsWriteOnlyAccessUsageDescription": "Unibud adds a deadline to your calendar only when you tap \"Add to calendar\" on it."
       },
       "buildNumber": "4"
     },

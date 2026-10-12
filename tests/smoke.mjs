@@ -369,7 +369,7 @@ await check('an unreachable calendar reports why instead of crashing', async () 
   const body = await page.locator('body').innerText();
   // Each step has its own message and code, so assert on the shape rather
   // than one sentence: web has no expo-calendar at all, which is E1.
-  if (!/\((E[1-5])\)/.test(body)) {
+  if (!/\(E[1-5][:)]/.test(body)) {
     throw new Error('no reason shown after a failed export');
   }
   // A failure keeps the panel open so the reason can be read.

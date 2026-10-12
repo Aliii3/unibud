@@ -35,10 +35,11 @@ services. The app works fully in airplane mode.
 CALENDAR AND REMINDERS
 Each deadline has an "Add to calendar" and an "Add to Reminders" button.
 Tapping one writes that single entry to the system Calendar or Reminders
-app via expo-calendar, after the standard permission prompt. Nothing is
-exported automatically, nothing is read from existing events, and nothing
-is kept in sync afterwards. These are on-device system apps, not a network
-service.
+app via expo-calendar, after the standard permission prompt. Calendar access
+is requested as **write-only**, which is all the app needs: it adds an entry
+and never reads what is already there. Nothing is exported automatically and
+nothing is kept in sync afterwards. These are on-device system apps, not a
+network service.
 
 NOTIFICATIONS
 Local only, scheduled on-device with expo-notifications. There is no push
@@ -146,7 +147,7 @@ Everything it uses is an on-device framework:
 | expo-sqlite | the local database holding all user data | No |
 | expo-notifications | scheduling local notifications on-device | No |
 | expo-document-picker | letting the user pick a file from their device | No |
-| expo-calendar | adding one entry to Calendar or Reminders, on request | Only if the user's own calendar syncs |
+| expo-calendar | adding one entry to Calendar or Reminders, on request (write-only access) | Only if the user's own calendar syncs |
 | expo-file-system | storing that file in the app's own sandbox | No |
 | expo-router, react-native-* | navigation and UI | No |
 

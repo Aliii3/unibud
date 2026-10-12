@@ -383,12 +383,28 @@ calendar side, and a half-synced calendar that is less trustworthy than an
 unsynced one. "Add" is the honest verb — a copy goes over and the two stop
 being related.
 
+It is written against expo-calendar's **object-oriented** API. The first
+version called `requestCalendarPermissionsAsync` and `createEventAsync`,
+which read as the obvious entry points but are the older surface: in SDK 57
+they sit behind `expo-calendar/legacy`, and calling them through the main
+import throws a deprecation error. On a device that is indistinguishable
+from the native module being absent, and two rounds of diagnosis went that
+way before the thrown text was put on screen. Calendar access is requested
+**write-only** — the app adds an entry and never reads one.
+
 `src/lib/nativeExport.ts` holds the writes and **nothing in it throws**.
 These run from a row in a list, so a rejected promise would take the whole
 screen down over a calendar the user may not even have; every failure comes
 back as a message to show instead. Android has no Reminders app and no
 default calendar, so it falls back to the first calendar that allows
 modification and says so when there is none.
+
+Every failure carries a code and the text that was actually thrown
+(`E1`–`E5`). That is unusual to put in front of a user, and it earns its
+place: there is no crash reporting in this app and no way to read someone
+else's device, so a screenshot of the row is the entire diagnostic channel.
+The first version said "could not reach the calendar" for any of four
+causes, which was true, useless, and pointed the wrong way.
 
 The control is two buttons in the row rather than a native action sheet,
 because `Alert.alert` is a no-op on react-native-web — a dialog would put
