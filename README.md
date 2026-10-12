@@ -156,7 +156,7 @@ reachable. The native project can be generated locally instead, which needs
 Xcode installed and makes you responsible for signing:
 
 ```bash
-npm run prebuild:ios    # writes the ios/ project from app.json
+npm run native:ios      # writes the ios/ project from app.json
 npm run xcode           # opens the workspace
 ```
 
@@ -167,6 +167,12 @@ Then in Xcode: pick **Any iOS Device (arm64)**, set the team under
 `ios/` is gitignored and regenerated from `app.json` and the plugin list, so
 never hand-edit anything inside it — `--clean` throws it away each run. A
 native change belongs in `app.json` or a config plugin.
+
+It is **not** called `prebuild:ios`, which it was at first. npm runs
+`pre<name>` before any script of that name, so `prebuild:ios` became the
+pre-hook of `build:ios` and generated a native project before every cloud
+build. Nothing failed loudly; EAS just stopped prebuilding on its own
+because a local `ios/` existed.
 
 Two things `prebuild` does that are easy to miss:
 
@@ -242,6 +248,27 @@ no analytics package, and `expo-updates` is not installed. If any of that
 changes, the policy has to change with it.
 
 ## Tests
+
+`npm run check:routes` is the cheapest of them and the one with the best
+story. expo-router turns every file under `app/` into a route and every file
+under `app/(tabs)/` into a tab, so a stray file is not dead weight — it is a
+new tab in the dock.
+
+A TestFlight build shipped with nine tabs. Five were called `docs 2`,
+`todo 2`, `index 2`, `_layout 2` and `deadlines 2`: iCloud sync-conflict
+copies, written beside the originals because the working copy sat in
+`~/Desktop`, which macOS syncs by default. The repository was clean, nothing
+failed to compile, and the only symptom was on a phone. **Keep a working
+copy outside an iCloud-synced folder.**
+
+The check asserts the exact set of route files, that there are exactly four
+tabs, and that nothing anywhere in the source looks like a conflict or
+editor copy. It needs no device, server or database and runs in
+milliseconds, so `build:ios`, `build:android` and `build:preview` all run it
+first — chained with `&&` rather than through a pre-hook, for the reason
+above. Adding a screen on purpose means adding it to `EXPECTED` in
+`tests/routes.test.mjs`, which is the point: a new route should be a
+deliberate edit, not a side effect.
 
 `npm run test:schema` runs the real migrations from `src/db/schema.ts`
 against an in-memory SQLite and asserts the cascades, the CHECK constraints
